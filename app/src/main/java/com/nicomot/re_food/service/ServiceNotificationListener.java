@@ -23,6 +23,8 @@ import com.nicomot.re_food.util.MenuUtil;
 import com.nicomot.re_food.util.ShowMessage;
 
 import java.lang.reflect.Type;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,11 +78,12 @@ public class ServiceNotificationListener extends NotificationListenerService {
                         if(chat.size() == 1) {
                             Action action = NotificationUtils.getQuickReplyAction(sbn.getNotification(), sbn.getPackageName());
                             try {
+
                                 action.sendReply(getApplicationContext(), "" +
                                         "Selamat Datang Di Resto Enak!!!\n" +
                                         "Apakah anda ingin memesan? \n" +
                                         "(jawab dengan angka saja)\n" +
-                                        " 1. YA\n" + "2. TIDAK");
+                                        "1. YA\n" + "2. TIDAK");
                             } catch (PendingIntent.CanceledException e) {
                                 e.printStackTrace();
                             }
@@ -162,25 +165,29 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                      //pesananan dihantarkan
                                      //1 = pesanan berupa makanan
                                      try {
-                                         action.sendReply(getApplicationContext(),"Silahkan memilih menu makanan \n" +
+                                         action.sendReply(getApplicationContext(),
+                                                 "Silahkan memilih menu makanan \n" +
                                                  "(Jawab dengan angka saja)\n" +
                                                  "\n" +
-                                                 "1. Nasi Goreng\n" +
-                                                 "2. Mie Goreng\n" +
-                                                 "3. Mie Kuah\n" +
-                                                 "4. Kwentiu Goreng");
+                                                 "1. Nasi Goreng (10k)\n" +
+                                                 "2. Mie Goreng (10k)\n" +
+                                                 "3. Mie Kuah (10k)\n" +
+                                                 "4. Kwentiu Goreng (10k)");
                                      } catch (PendingIntent.CanceledException e) {
                                          e.printStackTrace();
                                      }
                                  } else if(pesn.size() == 5 && pesn.get(4).equals("2")){
                                      ////minuman
                                      try {
-                                         action.sendReply(getApplicationContext(),"Silahkan  memilih menu minuman \n" +
-                                                 "1. Air Mineral\n" +
-                                                 "2. Es Teh \n" +
-                                                 "3. Teh Hangat\n" +
-                                                 "4. Es Jeruk\n" +
-                                                 "5. Jeruk Hangat");
+                                         action.sendReply(getApplicationContext(),
+                                                 "Silahkan  memilih menu minuman \n"+
+                                                 "(Jawab dengan angka saja)\n" +
+                                                         "\n" +
+                                                 "1. Air Mineral (4k)\n" +
+                                                 "2. Es Teh (3k)\n" +
+                                                 "3. Teh Hangat (3k)\n" +
+                                                 "4. Es Jeruk (3k)\n" +
+                                                 "5. Jeruk Hangat (3k)\n");
                                      } catch (PendingIntent.CanceledException e) {
                                          e.printStackTrace();
                                      }
@@ -188,7 +195,10 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                  } else if(pesn.size() == 5 && pesn.get(4).equals("3")){
                                      //Lauk saja
                                      try {
-                                         action.sendReply(getApplicationContext(),"Silahkan  memilih menu minuman \n" +
+                                         action.sendReply(getApplicationContext(),
+                                                 "Silahkan  memilih menu minuman \n" +
+                                                         "(Jawab dengan angka saja)\n" +
+                                                         "\n" +
                                                  "1. Ikan Goreng\n" +
                                                  "2. Kangkung \n" +
                                                  "3. Oseng Tempe\n" +
@@ -215,20 +225,28 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                          Pesanan pesan_1;
                                          switch (Integer.parseInt(pesn.get(5))){
                                              case 1:
-                                                 pesan_1 = new Pesanan(MenuUtil.Makanan.Nasi_Goreng.name().replaceAll("_"," "),Integer.parseInt(pesn.get(6)),10000);
-                                                 pesananMakanan.add(pesan_1);
+                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++){
+                                                     pesan_1 = new Pesanan(MenuUtil.Makanan.Nasi_Goreng.name().replaceAll("_"," "),Integer.parseInt("1"),10000);
+                                                     pesananMakanan.add(pesan_1);
+                                                 }
                                              break;
                                              case 2:
-                                                 pesan_1 = new Pesanan(MenuUtil.Makanan.Mie_Goreng.name().replaceAll("_"," "),Integer.parseInt(pesn.get(6)),10000);
-                                                 pesananMakanan.add(pesan_1);
+                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
+                                                     pesan_1 = new Pesanan(MenuUtil.Makanan.Mie_Goreng.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 10000);
+                                                     pesananMakanan.add(pesan_1);
+                                                 }
                                                  break;
                                              case 3:
-                                                 pesan_1 = new Pesanan(MenuUtil.Makanan.Mie_Kuah.name().replaceAll("_"," "),Integer.parseInt(pesn.get(6)),10000);
-                                                 pesananMakanan.add(pesan_1);
+                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
+                                                     pesan_1 = new Pesanan(MenuUtil.Makanan.Mie_Kuah.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 10000);
+                                                     pesananMakanan.add(pesan_1);
+                                                 }
                                                  break;
                                              case 4:
-                                                 pesan_1  = new Pesanan(MenuUtil.Makanan.Kweatiu_Goreng.name().replaceAll("_"," "),Integer.parseInt(pesn.get(6)),8000);
-                                                 pesananMakanan.add(pesan_1);
+                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
+                                                     pesan_1 = new Pesanan(MenuUtil.Makanan.Kweatiu_Goreng.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 8000);
+                                                     pesananMakanan.add(pesan_1);
+                                                 }
                                                  break;
                                          }
                                          listCustomer.get(index).setPesananMakanan(pesananMakanan);
@@ -246,24 +264,34 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                          Pesanan pesan_1;
                                          switch (Integer.parseInt(pesn.get(5))) {
                                              case 1:
-                                                 pesan_1 = new Pesanan(MenuUtil.Minuman.Air_Mineral.name().replaceAll("_"," "),Integer.parseInt(pesn.get(6)),4000);
-                                                 pesananMinuman.add(pesan_1);
+                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
+                                                     pesan_1 = new Pesanan(MenuUtil.Minuman.Air_Mineral.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 4000);
+                                                     pesananMinuman.add(pesan_1);
+                                                 }
                                                  break;
                                              case 2:
-                                                 pesan_1 = new Pesanan(MenuUtil.Minuman.Es_Teh.name().replaceAll("_"," "),Integer.parseInt(pesn.get(6)),3000);
-                                                 pesananMinuman.add(pesan_1);
+                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
+                                                     pesan_1 = new Pesanan(MenuUtil.Minuman.Es_Teh.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 3000);
+                                                     pesananMinuman.add(pesan_1);
+                                                 }
                                                  break;
                                              case 3:
-                                                 pesan_1 = new Pesanan(MenuUtil.Minuman.Teh_Hangat.name().replaceAll("_"," "),Integer.parseInt(pesn.get(6)),3000);
-                                                 pesananMinuman.add(pesan_1);
+                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
+                                                     pesan_1 = new Pesanan(MenuUtil.Minuman.Teh_Hangat.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 3000);
+                                                     pesananMinuman.add(pesan_1);
+                                                 }
                                                  break;
                                              case 4:
-                                                 pesan_1 = new Pesanan(MenuUtil.Minuman.Jeruk_Hangat.name().replaceAll("_"," "),Integer.parseInt(pesn.get(6)),3000);
-                                                 pesananMinuman.add(pesan_1);
+                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
+                                                     pesan_1 = new Pesanan(MenuUtil.Minuman.Jeruk_Hangat.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 3000);
+                                                     pesananMinuman.add(pesan_1);
+                                                 }
                                                  break;
                                              case 5:
-                                                 pesan_1 = new Pesanan(MenuUtil.Minuman.Es_Jeruk.name().replaceAll("_"," "),Integer.parseInt(pesn.get(6)),3000);
-                                                 pesananMinuman.add(pesan_1);
+                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
+                                                     pesan_1 = new Pesanan(MenuUtil.Minuman.Es_Jeruk.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 3000);
+                                                     pesananMinuman.add(pesan_1);
+                                                 }
                                                  break;
                                          }
                                          listCustomer.get(index).setPesananMinuman(pesananMinuman);
@@ -283,20 +311,28 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                          Pesanan pesan_1;
                                          switch (Integer.parseInt(pesn.get(5))) {
                                              case 1:
-                                                 pesan_1 = new Pesanan(MenuUtil.Lauk.Ikan_Goreng.name().replaceAll("_"," "),Integer.parseInt(pesn.get(6)),5000);
-                                                 pesananLauk.add(pesan_1);
+                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
+                                                     pesan_1 = new Pesanan(MenuUtil.Lauk.Ikan_Goreng.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 5000);
+                                                     pesananLauk.add(pesan_1);
+                                                 }
                                                  break;
                                              case 2:
-                                                 pesan_1 = new Pesanan(MenuUtil.Lauk.Kangkung.name().replaceAll("_"," "),Integer.parseInt(pesn.get(6)),3000);
-                                                 pesananLauk.add(pesan_1);
+                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
+                                                     pesan_1 = new Pesanan(MenuUtil.Lauk.Kangkung.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 3000);
+                                                     pesananLauk.add(pesan_1);
+                                                 }
                                                  break;
                                              case 3:
-                                                 pesan_1 = new Pesanan(MenuUtil.Lauk.Oseng_Tempe.name().replaceAll("_"," "),Integer.parseInt(pesn.get(6)),3000);
-                                                 pesananLauk.add(pesan_1);
+                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
+                                                     pesan_1 = new Pesanan(MenuUtil.Lauk.Oseng_Tempe.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 3000);
+                                                     pesananLauk.add(pesan_1);
+                                                 }
                                                  break;
                                              case 4:
-                                                 pesan_1 = new Pesanan(MenuUtil.Lauk.Semur_Sayur.name().replaceAll("_"," "),Integer.parseInt(pesn.get(6)),3000);
-                                                 pesananLauk.add(pesan_1);
+                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
+                                                     pesan_1 = new Pesanan(MenuUtil.Lauk.Semur_Sayur.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 3000);
+                                                     pesananLauk.add(pesan_1);
+                                                 }
                                                  break;
                                          }
                                          listCustomer.get(index).setPesananSnack(pesananLauk);
@@ -335,30 +371,65 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                          case 2:
                                              //TIDAK
                                              listCustomer.get(index).setStateKondisiMemesan( false);
-                                             String headerText = "======NAMA TOKO======\n";
+                                             String headerText = "KONFIRMASI PESANAN\n";
                                              StringBuilder sb = new StringBuilder();
                                              sb.append(headerText);
+                                             sb.append("----------------------------------------------------\n");
                                              int iterationIndex = 1;
-                                              if(listCustomer.get(index).getPesananMakanan() != null){
+                                             List<Pesanan> listFilterMakanan, listFilterMinuman, listFilterLaukPauk;
+                                             listFilterMakanan = new ArrayList<>();
+                                             listFilterMinuman = new ArrayList<>();
+                                             listFilterLaukPauk = new ArrayList<>();
+                                             DataDiri dataDiri = listCustomer.get(index).getDataDiri();
 
-                                                 for(Pesanan makanans : listCustomer.get(index).getPesananMakanan()){
-                                                     sb.append(iterationIndex + "." + makanans.getNamaPesanan() + "\n");
-                                                 }
-                                                 iterationIndex++;
+                                             String nama = "*Nama = " + dataDiri.getNamaPemesan() + "\n";
+                                             String alamat = "*Alamat = " + dataDiri.getAlamat() + "\n";
+                                             String nomerHp = "*Nomer = " + dataDiri.getNomerHp() + "\n";
+                                             sb.append(nama);
+                                             sb.append(alamat);
+                                             sb.append(nomerHp);
+                                             sb.append("----------------------------------------------------\n");
+
+                                             int total = 0;
+
+                                             if(listCustomer.get(index).getPesananMakanan() != null){
+                                                  listFilterMakanan = removeDuplicatePesanan(listCustomer.get(index).getPesananMakanan());
+                                                  for(Pesanan makanans : listFilterMakanan){
+                                                      String format = String.format("*%d.%s (%d x %d) = %s\n",iterationIndex,makanans.getNamaPesanan(),makanans.getHargaPesanan(),makanans.getJumlahPesanan(),convertRupiah(makanans.getHargaPesanan() * makanans.getJumlahPesanan()));
+                                                      sb.append(format);
+                                                      iterationIndex++;
+                                                      total += makanans.getHargaPesanan() * makanans.getJumlahPesanan();
+                                                  }
                                              }
                                              if(listCustomer.get(index).getPesananMinuman() != null){
-                                                 for(Pesanan minuman : listCustomer.get(index).getPesananMinuman()){
-                                                     sb.append(iterationIndex + "." + minuman.getNamaPesanan()+ "\n");
+                                                 listFilterMinuman = removeDuplicatePesanan(listCustomer.get(index).getPesananMinuman());
+                                                 for(Pesanan minuman : listFilterMinuman){
+                                                     String format = String.format("*%d.%s (%d x %d) = %s\n",iterationIndex,minuman.getNamaPesanan(),minuman.getHargaPesanan() , minuman.getJumlahPesanan(),convertRupiah(minuman.getHargaPesanan() * minuman.getJumlahPesanan()));
+                                                     sb.append(format);
+                                                     iterationIndex++;
+
+                                                     total += minuman.getHargaPesanan() * minuman.getJumlahPesanan();
                                                  }
-                                                 iterationIndex++;
                                              }
                                              if(listCustomer.get(index).getPesananSnack() != null){
-                                                 for(Pesanan lauk : listCustomer.get(index).getPesananSnack()){
-                                                     sb.append(iterationIndex + "." + lauk.getNamaPesanan()+ "\n");
+                                                 listFilterLaukPauk = removeDuplicatePesanan(listCustomer.get(index).getPesananSnack());
+                                                 for(Pesanan lauk : listFilterLaukPauk){
+                                                     String format = String.format("*%d.%s (%d x %d) = %s\n",lauk.getNamaPesanan(),lauk.getHargaPesanan() ,lauk.getJumlahPesanan() ,convertRupiah(lauk.getHargaPesanan() * lauk.getJumlahPesanan()));
+                                                     sb.append(format);
+                                                     iterationIndex++;
+                                                     total += lauk.getHargaPesanan() * lauk.getJumlahPesanan();
                                                  }
-
-                                                 iterationIndex++;
                                              }
+                                             sb.append("----------------------------------------------------\n");
+                                             String totalStr = "*Total = " + convertRupiah(total) + "\n";
+                                             sb.append(totalStr);
+                                             sb.append("----------------------------------------------------\n\n");
+                                             String ask = "Apakah sudah sesuai dengan pesananmu ? \n" +
+                                                     "(Jawab Dengan Angka Saja).   \n" +
+                                                     "   1. IYA\n" +
+                                                     "   2. TIDAK\n";
+                                             sb.append(ask);
+                                             System.out.println(sb.toString() + " SB dude");
                                              try {
                                                  action.sendReply(getApplicationContext(),sb.toString());
                                              } catch (PendingIntent.CanceledException e) {
@@ -366,8 +437,42 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                              }
                                              break;
                                      }
+                                 } else if(pesn.size() == 9){
+                                     switch(Integer.parseInt(pesn.get(9))){
+                                         case 1:
+                                             String pesananDiterima = "Pesanan telah di konfirmasi, makanan akan kami proses jadi mohon ditunggu Terima Kasih";
+                                             try {
+                                                 action.sendReply(getApplicationContext(),pesananDiterima);
+                                             } catch (PendingIntent.CanceledException e) {
+                                                 e.printStackTrace();
+                                             }
+                                             break;
+                                         case 2:
+                                             listCustomer.get(index).setStateKondisiMemesan( true);
+                                             //YA
+                                             clear = true;
+                                             //remove 3 ... size desc
+                                             for(int i = pesn.size() - 1; i >  3;i--){
+                                                 pesn.remove(i);
+                                             }
+                                             System.out.println("current size after clean = " + pesn.size());
+                                             String messgMenu = "Silahkan memilih jenis makanan \n" +
+                                                     "(Jawab dengan angka saja)\n" +
+                                                     "\n" +
+                                                     "1.Makanan\n" +
+                                                     "2.Minuman\n" +
+                                                     "3.Lauk saja";
+                                             try {
+                                                 action.sendReply(getApplicationContext(),messgMenu);
+                                             } catch (PendingIntent.CanceledException e) {
+                                                 e.printStackTrace();
+                                             }
+                                             break;
+                                     }
+
                                  } else if(pesn.get(pesn.size() - 1).equals("RESET")){
                                      listCustomer.get(index).getListMessage().clear();
+                                     System.out.println("RESET BERHASIL");
                                  }
                                 System.out.println("size chat not null when user exist on list = " + pesn.size());
                                  listCustomer.set(index,listCustomer.get(index)).setListMessage(pesn);
@@ -398,16 +503,24 @@ public class ServiceNotificationListener extends NotificationListenerService {
                             saveModelList(listCustomer);
                         }
                     }
-
                 }
-
-
             }
         }
 
 
     }
-    String removeDuplicatePesanan(List<Pesanan> listMakanan ,int currentIndex){
+    static String convertRupiah(int num){
+        DecimalFormat kursIndonesia = (DecimalFormat) DecimalFormat.getCurrencyInstance();
+        DecimalFormatSymbols formatRp = new DecimalFormatSymbols();
+        formatRp.setCurrencySymbol("Rp. ");
+        formatRp.setMonetaryDecimalSeparator(',');
+        formatRp.setGroupingSeparator('.');
+        kursIndonesia.setDecimalFormatSymbols(formatRp);
+        return kursIndonesia.format(num).substring(0,kursIndonesia.format(num).length() - 3)
+                ;
+
+    }
+    List<Pesanan> removeDuplicatePesanan(List<Pesanan> listMakanan){
         Pesanan[] names = new Pesanan[listMakanan.size()];
         for(int i = 0; i < listMakanan.size(); i++){
             names[i] = listMakanan.get(i);
@@ -419,13 +532,13 @@ public class ServiceNotificationListener extends NotificationListenerService {
         for (int i = 0; i < names.length; i++) {
             int count = 0;
             for (int k = 0; k < names.length; k++) {
-                if (names[i].getNamaPesanan() == names[k].getNamaPesanan()) {
+                if (names[i].getNamaPesanan().equals( names[k].getNamaPesanan())) {
                     count++;
                 }
             }
             if (count >= 1) {
                 if (!repeatNames.containsKey(names[i].getNamaPesanan())) {
-                    System.out.println(names[i].getNamaPesanan() + ":" + count);
+                    System.out.println(names[i].getNamaPesanan() + ":" + count + " wasu");
                     pesananNew.add(new Pesanan(names[i].getNamaPesanan(),count,names[i].getHargaPesanan()));
                     repeatNames.put(names[i].getNamaPesanan(), count);
                     repeatCount += count;
@@ -436,7 +549,7 @@ public class ServiceNotificationListener extends NotificationListenerService {
             System.out.printf("%s = %d %n" ,pesananNew.get(i).getNamaPesanan(),pesananNew.get(i).getJumlahPesanan() * pesananNew.get(i).getHargaPesanan());
         }
         System.out.println("Total Count:" + repeatCount);
-        return "";
+        return pesananNew;
     }
 
 

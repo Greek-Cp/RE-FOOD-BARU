@@ -11,9 +11,11 @@
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/activity_base.xml" value="0.22" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/activity_main.xml" value="0.16869300911854104" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/adapter_layout_pesanan.xml" value="0.19610507246376813" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/card_order_pesanan.xml" value="0.22" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_account.xml" value="0.20244565217391305" />
-        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_home.xml" value="0.2" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_home.xml" value="0.25" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_login.xml" value="0.19610507246376813" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/layout_adapter_list_pesanan_card.xml" value="0.33" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/menu/menu_nav_view.xml" value="0.346875" />
       </map>
     </option>
@@ -23,5 +25,12 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.33" />
+      </ProjectState>
+    </option>
   </component>
 </project>
