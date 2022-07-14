@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment.HomeFragment">
+    tools:context=".fragment.SiapkanPesanan">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <ImageView
         android:id="@+id/id_img_logo_home"
         android:layout_width="wrap_content"
@@ -56,23 +59,45 @@
 
         />
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/id_rec_menu_makanan_inside_rec_list_pesanan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:listitem="@layout/layout_adapter_list_pesanan_card"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/id_tv_list_notes"
+
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:id="@+id/id_rec_list_pesanan"
-        />
-    <androidx.recyclerview.widget.RecyclerView
+        app:layout_constraintTop_toBottomOf="@id/id_tv_list_notes"
+        tools:listitem="@layout/adapter_layout_img_siapkan_pesanan" />
+
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:orientation="vertical"
-        tools:listitem="@layout/card_order_pesanan"
-        app:layout_constraintTop_toBottomOf="@id/id_rec_list_pesanan"
-        android:id="@+id/id_rec_list_pesanan_cust"
-        />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="20dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        app:layout_constraintTop_toBottomOf="@id/id_rec_menu_makanan_inside_rec_list_pesanan"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="400dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No Order"
+                android:id="@+id/id_tv_tagihan"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="30dp"
+                android:textStyle="bold"
+
+                android:layout_marginLeft="30dp"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

@@ -8,6 +8,26 @@ public class Customer {
     private List<Pesanan> pesananMakanan;
     private List<Pesanan> pesananMinuman;
     private List<Pesanan> pesananSnack;
+    private List<Pesanan> semuaPesanan;
+    private int totalPesanan;
+
+    private String messageTagihan;
+    public List<Pesanan> getSemuaPesanan() {
+        return semuaPesanan;
+    }
+
+    public void setSemuaPesanan(List<Pesanan> semuaPesanan) {
+        this.semuaPesanan = semuaPesanan;
+    }
+
+    public int getTotalPesanan() {
+        return totalPesanan;
+    }
+
+    public void setTotalPesanan(int totalPesanan) {
+        this.totalPesanan = totalPesanan;
+    }
+
     private boolean pesananDihantarkan;
     private boolean stateKondisiMemesan;
     private DataDiri dataDiri;
@@ -19,6 +39,14 @@ public class Customer {
         this.pesananMinuman = pesananMinuman;
         this.pesananSnack = pesananLaukPauk;
         this.stateKondisiMemesan = stateKondisiMemesan;
+    }
+
+    public String getMessageTagihan() {
+        return messageTagihan;
+    }
+
+    public void setMessageTagihan(String messageTagihan) {
+        this.messageTagihan = messageTagihan;
     }
 
     public boolean isStateKondisiMemesan() {
@@ -82,4 +110,5 @@ public class Customer {
     public void setPesananSnack(List<Pesanan> pesananSnack) {
         this.pesananSnack = pesananSnack;
     }
+
 }

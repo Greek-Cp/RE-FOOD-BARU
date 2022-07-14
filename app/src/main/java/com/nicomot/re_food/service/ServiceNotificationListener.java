@@ -34,6 +34,7 @@ import java.util.Locale;
 public class ServiceNotificationListener extends NotificationListenerService {
 
     List<Customer> listCustomer;
+    List<Customer> listValidCustomer;
     List<String> chat;
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
@@ -43,11 +44,15 @@ public class ServiceNotificationListener extends NotificationListenerService {
         String message = bundle.getString(NotificationCompat.EXTRA_TEXT);
         System.out.println("From = " + from + "\n" + "Message = " + message);
         listCustomer = getModelCustomer();
+        listValidCustomer = getListValidCustomer();
+        if(listValidCustomer == null){
+            listValidCustomer = new ArrayList<>();
+        }
+
         chat = new ArrayList<>();
         boolean clear = false;
-            if(  message != null && !message.contains("new messages") || !message.contains("pesan baru")){
-
-            if(message != null  && !from.isEmpty() && from != null){
+        if(  message != null && !message.contains("new") && !message.contains("pesan baru")){
+            if(message != null  && from != null){
                 try {
                     System.out.println("get succes");
                 }catch (NullPointerException e){
@@ -67,6 +72,7 @@ public class ServiceNotificationListener extends NotificationListenerService {
                     sendMessageToFragmentAndFilter(from,message);
                     if(listCustomer == null){
                         listCustomer = new ArrayList<>();
+                        listValidCustomer = new ArrayList<>();
                         chat = new ArrayList<>();
                         chat.add(message);
                         System.out.println("size chawt from null preprare = " + chat.size());
@@ -98,8 +104,8 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                 System.out.println("nomer sama = " + listCustomer.get(index).getName());
                                 List<String> pesn = listCustomer.get(index).getListMessage();
                                 apakahSama = true;
-                               pesn.add(message);
-                               System.out.println("pesn size = " + pesn.size());
+                                   pesn.add(message);
+                                    System.out.println("pesn size = " + pesn.size());
                                 Action action = NotificationUtils.getQuickReplyAction(sbn.getNotification(), sbn.getPackageName());
                                  if (pesn.size() == 2 && pesn.get(1).equals("1") &&  listCustomer.get(index).isStateKondisiMemesan() == false){
                                     try {
@@ -111,10 +117,27 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                     } catch (PendingIntent.CanceledException e) {
                                         e.printStackTrace();
                                     }
-                                } else if(pesn.size() == 3 && pesn.get(2).contains("Nama Pemesan") && listCustomer.get(index).isStateKondisiMemesan() == false){
-                                     String dataDiriParser[] = pesn.get(2).split(" : ");
-                                     DataDiri dataPribadiUser = new DataDiri(dataDiriParser[1],dataDiriParser[2],dataDiriParser[3]);
-                                     String nomorClean =dataPribadiUser.getNomerHp().trim();
+                                } else if(pesn.size() == 3 && pesn.get(2).contains("Nama Pemesan") || pesn.get(2).contains("Silahkan mengisi data diri")&& listCustomer.get(index).isStateKondisiMemesan() == false){
+
+                                     DataDiri dataPribadiUser = new DataDiri("","","");
+                                     if(pesn.get(2).split(" : ").length != 1){
+                                         String arr[] = pesn.get(2).split(" : ");
+                                          dataPribadiUser = new DataDiri(arr[1],arr[2],arr[3]);
+
+                                     } else if (pesn.get(2).split(":").length != 1) {
+                                         String arr[] = pesn.get(2).split(":");
+                                          dataPribadiUser = new DataDiri(arr[1],arr[2],arr[3]);
+
+                                     } else if(pesn.get(2).split(": ").length != 1){
+                                         String arr[] = pesn.get(2).split(": ");
+                                          dataPribadiUser = new DataDiri(arr[1],arr[2],arr[3]);
+
+                                     } else if(pesn.get(2).split(" :").length != 1){
+                                         String arr[] = pesn.get(2).split(" :");
+                                          dataPribadiUser = new DataDiri(arr[1],arr[2],arr[3]);
+
+                                     }
+                                       String nomorClean = dataPribadiUser.getNomerHp().trim();
                                      String namaClean = dataPribadiUser.getNamaPemesan().replaceAll("Alamat lengkap","").trim();
                                      String alamatClean = dataPribadiUser.getAlamat().replaceAll("Nomor Hp","").trim();
                                      dataPribadiUser.setAlamat(alamatClean);
@@ -180,7 +203,7 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                      ////minuman
                                      try {
                                          action.sendReply(getApplicationContext(),
-                                                 "Silahkan  memilih menu minuman \n"+
+                                                 "Silahkan  memilih minuman \n"+
                                                  "(Jawab dengan angka saja)\n" +
                                                          "\n" +
                                                  "1. Air Mineral (4k)\n" +
@@ -196,7 +219,7 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                      //Lauk saja
                                      try {
                                          action.sendReply(getApplicationContext(),
-                                                 "Silahkan  memilih menu minuman \n" +
+                                                 "Silahkan  memilih menu lauk \n" +
                                                          "(Jawab dengan angka saja)\n" +
                                                          "\n" +
                                                  "1. Ikan Goreng\n" +
@@ -223,6 +246,7 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                           */
                                          List<Pesanan> pesananMakanan = listCustomer.get(index).getPesananMakanan();
                                          Pesanan pesan_1;
+
                                          switch (Integer.parseInt(pesn.get(5))){
                                              case 1:
                                                  for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++){
@@ -414,15 +438,17 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                              if(listCustomer.get(index).getPesananSnack() != null){
                                                  listFilterLaukPauk = removeDuplicatePesanan(listCustomer.get(index).getPesananSnack());
                                                  for(Pesanan lauk : listFilterLaukPauk){
-                                                     String format = String.format("*%d.%s (%d x %d) = %s\n",lauk.getNamaPesanan(),lauk.getHargaPesanan() ,lauk.getJumlahPesanan() ,convertRupiah(lauk.getHargaPesanan() * lauk.getJumlahPesanan()));
+                                                     String format = String.format("*%d.%s (%d x %d) = %s\n",iterationIndex,lauk.getNamaPesanan(),lauk.getHargaPesanan() ,lauk.getJumlahPesanan() ,convertRupiah(lauk.getHargaPesanan() * lauk.getJumlahPesanan()));
                                                      sb.append(format);
                                                      iterationIndex++;
                                                      total += lauk.getHargaPesanan() * lauk.getJumlahPesanan();
                                                  }
                                              }
+                                             listCustomer.get(index).setTotalPesanan(total);
                                              sb.append("----------------------------------------------------\n");
                                              String totalStr = "*Total = " + convertRupiah(total) + "\n";
                                              sb.append(totalStr);
+                                             listCustomer.get(index).setMessageTagihan(sb.toString());
                                              sb.append("----------------------------------------------------\n\n");
                                              String ask = "Apakah sudah sesuai dengan pesananmu ? \n" +
                                                      "(Jawab Dengan Angka Saja).   \n" +
@@ -438,7 +464,7 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                              break;
                                      }
                                  } else if(pesn.size() == 9){
-                                     switch(Integer.parseInt(pesn.get(9))){
+                                     switch(Integer.parseInt(pesn.get(8))){
                                          case 1:
                                              String pesananDiterima = "Pesanan telah di konfirmasi, makanan akan kami proses jadi mohon ditunggu Terima Kasih";
                                              try {
@@ -446,6 +472,26 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                              } catch (PendingIntent.CanceledException e) {
                                                  e.printStackTrace();
                                              }
+                                             List<Pesanan> semuaPesanan = new ArrayList<>();
+                                             if(listCustomer.get(index).getPesananMakanan() != null){
+
+                                                 for(Pesanan pesananMakanan : listCustomer.get(index).getPesananMakanan()){
+                                                     semuaPesanan.add(pesananMakanan);
+                                                 }
+                                             }
+                                             if(listCustomer.get(index).getPesananMinuman() != null){
+                                                 for(Pesanan pesananMinuman : listCustomer.get(index).getPesananMinuman()){
+                                                     semuaPesanan.add(pesananMinuman);
+                                                 }
+                                             }
+                                             if(listCustomer.get(index).getPesananSnack() != null){
+                                                for(Pesanan pesananLauk : listCustomer.get(index).getPesananSnack()){
+                                                    semuaPesanan.add(pesananLauk);
+                                                }
+                                             }
+                                             listCustomer.get(index).setSemuaPesanan(semuaPesanan);
+                                             listValidCustomer.add(listCustomer.get(index));
+                                             saveListValidCustomer(listValidCustomer);
                                              break;
                                          case 2:
                                              listCustomer.get(index).setStateKondisiMemesan( true);
@@ -474,9 +520,9 @@ public class ServiceNotificationListener extends NotificationListenerService {
                                      listCustomer.get(index).getListMessage().clear();
                                      System.out.println("RESET BERHASIL");
                                  }
-                                System.out.println("size chat not null when user exist on list = " + pesn.size());
+                                 System.out.println("size chat not null when user exist on list = " + pesn.size());
                                  listCustomer.set(index,listCustomer.get(index)).setListMessage(pesn);
-                                saveModelList(listCustomer);
+                                 saveModelList(listCustomer);
                             } else{
                             System.out.println("data di tambahkan");
                             }
@@ -553,6 +599,23 @@ public class ServiceNotificationListener extends NotificationListenerService {
     }
 
 
+    void saveListValidCustomer(List<Customer> listCustomer){
+        SharedPreferences sharedPreferences;
+        sharedPreferences = getApplicationContext().getSharedPreferences("ORDERAN_DITERIMA", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        System.out.println("Json Save Valid = " + gson.toJson(listCustomer));
+        sharedPreferences.edit().putString("KEY_ORDER",gson.toJson(listCustomer)).commit();
+        Toast.makeText(getApplicationContext(),"Model Saved", Toast.LENGTH_LONG).show();
+    }
+    List<Customer> getListValidCustomer(){
+        SharedPreferences sharedPreferences;
+        sharedPreferences = getApplicationContext().getSharedPreferences("ORDERAN_DITERIMA",Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        Type typeCustomer = new TypeToken<List<Customer>>(){}.getType();
+        System.out.println("Json Load valid = " + sharedPreferences.getString("KEY_ORDER",""));
+        List<Customer> listCust = gson.fromJson(sharedPreferences.getString("KEY_ORDER",""),typeCustomer);
+        return listCust;
+    }
     void saveModelList(List<Customer> listCustomer){
         SharedPreferences sharedPreferences;
         sharedPreferences = getApplicationContext().getSharedPreferences("PREF_CUST", Context.MODE_PRIVATE);
@@ -561,6 +624,7 @@ public class ServiceNotificationListener extends NotificationListenerService {
         sharedPreferences.edit().putString("MODEL_CUST_KEY",gson.toJson(listCustomer)).commit();
         Toast.makeText(getApplicationContext(),"Model Saved", Toast.LENGTH_LONG).show();
     }
+
     List<Customer> getModelCustomer(){
         SharedPreferences sharedPreferences;
         sharedPreferences = getApplicationContext().getSharedPreferences("PREF_CUST",Context.MODE_PRIVATE);
@@ -570,6 +634,8 @@ public class ServiceNotificationListener extends NotificationListenerService {
         List<Customer> listCust = gson.fromJson(sharedPreferences.getString("MODEL_CUST_KEY",""),typeCustomer);
         return listCust;
     }
+
+
     void sendMessageToFragmentAndFilter(String from , String message_text){
             Intent intentData = new Intent("NOTIFICzATION_DATA");
             intentData.putExtra("FROM",from);
