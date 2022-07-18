@@ -1,655 +1,1 @@
-package com.nicomot.re_food.service;
-
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.service.notification.NotificationListenerService;
-import android.service.notification.StatusBarNotification;
-import android.widget.Toast;
-
-import androidx.core.app.NotificationCompat;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.nicomot.re_food.model.Customer;
-import com.nicomot.re_food.model.DataDiri;
-import com.nicomot.re_food.model.Pesanan;
-import com.nicomot.re_food.models.Action;
-import com.nicomot.re_food.robj.notificationhelperlibrary.utils.NotificationUtils;
-import com.nicomot.re_food.util.MenuUtil;
-import com.nicomot.re_food.util.ShowMessage;
-
-import java.lang.reflect.Type;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-
-
-public class ServiceNotificationListener extends NotificationListenerService {
-
-    List<Customer> listCustomer;
-    List<Customer> listValidCustomer;
-    List<String> chat;
-    @Override
-    public void onNotificationPosted(StatusBarNotification sbn) {
-        super.onNotificationPosted(sbn);
-        Bundle bundle = sbn.getNotification().extras;;
-        String from = bundle.getString(NotificationCompat.EXTRA_TITLE);
-        String message = bundle.getString(NotificationCompat.EXTRA_TEXT);
-        System.out.println("From = " + from + "\n" + "Message = " + message);
-        listCustomer = getModelCustomer();
-        listValidCustomer = getListValidCustomer();
-        if(listValidCustomer == null){
-            listValidCustomer = new ArrayList<>();
-        }
-
-        chat = new ArrayList<>();
-        boolean clear = false;
-        if(  message != null && !message.contains("new") && !message.contains("pesan baru")){
-            if(message != null  && from != null){
-                try {
-                    System.out.println("get succes");
-                }catch (NullPointerException e){
-                }
-                if(message.contains("wado")){
-                    Action action = NotificationUtils.getQuickReplyAction(sbn.getNotification(), sbn.getPackageName());
-                    for(int i = 0; i < 100; i++){
-                        try {
-                            action.sendReply(getApplicationContext(),"hello brian kunz");
-                        } catch (PendingIntent.CanceledException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-                if(from.contains("+62")){
-                    sendMessageToFragmentAndFilter(from,message);
-                    if(listCustomer == null){
-                        listCustomer = new ArrayList<>();
-                        listValidCustomer = new ArrayList<>();
-                        chat = new ArrayList<>();
-                        chat.add(message);
-                        System.out.println("size chawt from null preprare = " + chat.size());
-                        System.out.println("chat null = " + chat);
-                        List<Pesanan> pesananMakanan = new ArrayList<>();
-                        List<Pesanan> pesananMinuman = new ArrayList<>();
-                        List<Pesanan> pesananLaukPauk = new ArrayList<>();
-                        listCustomer.add(new Customer(from,chat,pesananMakanan,pesananMinuman,pesananLaukPauk,false));
-                        if(chat.size() == 1) {
-                            Action action = NotificationUtils.getQuickReplyAction(sbn.getNotification(), sbn.getPackageName());
-                            try {
-
-                                action.sendReply(getApplicationContext(), "" +
-                                        "Selamat Datang Di Resto Enak!!!\n" +
-                                        "Apakah anda ingin memesan? \n" +
-                                        "(jawab dengan angka saja)\n" +
-                                        "1. YA\n" + "2. TIDAK");
-                            } catch (PendingIntent.CanceledException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        saveModelList(listCustomer);
-                    } else{
-                        boolean apakahSama = false;
-                        int endSize = listCustomer.size();
-                        for(int index = 0; index < listCustomer.size(); index++){
-                            System.out.println("Name = " + listCustomer.get(index).getName()  + " From = " + from);
-                           if(listCustomer.get(index).getName().equals(from)){
-                                System.out.println("nomer sama = " + listCustomer.get(index).getName());
-                                List<String> pesn = listCustomer.get(index).getListMessage();
-                                apakahSama = true;
-                                   pesn.add(message);
-                                    System.out.println("pesn size = " + pesn.size());
-                                Action action = NotificationUtils.getQuickReplyAction(sbn.getNotification(), sbn.getPackageName());
-                                 if (pesn.size() == 2 && pesn.get(1).equals("1") &&  listCustomer.get(index).isStateKondisiMemesan() == false){
-                                    try {
-                                        action.sendReply(getApplicationContext(),"Silahkan mengisi data diri untuk proses pengiriman.\n" +
-                                            "\n" +
-                                            "Nama Pemesan :\n" +
-                                            "Alamat lengkap  :\n" +
-                                            "Nomor Hp            :");
-                                    } catch (PendingIntent.CanceledException e) {
-                                        e.printStackTrace();
-                                    }
-                                } else if(pesn.size() == 3 && pesn.get(2).contains("Nama Pemesan") || pesn.get(2).contains("Silahkan mengisi data diri")&& listCustomer.get(index).isStateKondisiMemesan() == false){
-
-                                     DataDiri dataPribadiUser = new DataDiri("","","");
-                                     if(pesn.get(2).split(" : ").length != 1){
-                                         String arr[] = pesn.get(2).split(" : ");
-                                          dataPribadiUser = new DataDiri(arr[1],arr[2],arr[3]);
-
-                                     } else if (pesn.get(2).split(":").length != 1) {
-                                         String arr[] = pesn.get(2).split(":");
-                                          dataPribadiUser = new DataDiri(arr[1],arr[2],arr[3]);
-
-                                     } else if(pesn.get(2).split(": ").length != 1){
-                                         String arr[] = pesn.get(2).split(": ");
-                                          dataPribadiUser = new DataDiri(arr[1],arr[2],arr[3]);
-
-                                     } else if(pesn.get(2).split(" :").length != 1){
-                                         String arr[] = pesn.get(2).split(" :");
-                                          dataPribadiUser = new DataDiri(arr[1],arr[2],arr[3]);
-
-                                     }
-                                       String nomorClean = dataPribadiUser.getNomerHp().trim();
-                                     String namaClean = dataPribadiUser.getNamaPemesan().replaceAll("Alamat lengkap","").trim();
-                                     String alamatClean = dataPribadiUser.getAlamat().replaceAll("Nomor Hp","").trim();
-                                     dataPribadiUser.setAlamat(alamatClean);
-                                     dataPribadiUser.setNamaPemesan(namaClean);
-                                     dataPribadiUser.setNomerHp(nomorClean);
-                                     listCustomer.get(index).setDataDiri(dataPribadiUser);
-                                         String messg = "Apakah pesanan anda ingin di antar?\n" +
-                                                 "\n" +
-                                                 "1. YA\n" +
-                                                 "2. TIDAK\n \n (jawab dengan angka saja)";
-                                         try {
-                                             action.sendReply(getApplicationContext(),messg);
-                                         } catch (PendingIntent.CanceledException e) {
-                                             e.printStackTrace();
-                                         }
-                                 } else if(pesn.size() == 4 && pesn.get(3).equals("1")){
-                                     listCustomer.get(index).setPesananDihantarkan(true);
-                                     String messgMenu = "Silahkan memilih jenis makanan \n" +
-                                             "(Jawab dengan angka saja)\n" +
-                                             "\n" +
-                                             "1.Makanan\n" +
-                                             "2.Minuman\n" +
-                                             "3.Lauk saja";
-                                     try {
-                                         action.sendReply(getApplicationContext(),"Baik Pesananmu Akan Kami Hantarkan");
-                                         action.sendReply(getApplicationContext(),messgMenu);
-                                     } catch (PendingIntent.CanceledException e) {
-                                         e.printStackTrace();
-                                     }
-                                 } else if(pesn.size() == 4 && pesn.get(3).equals("1") && listCustomer.get(index).isStateKondisiMemesan() == true && message.equals("1")){
-                                     listCustomer.get(index).setPesananDihantarkan(true);
-                                     String messgMenu = "Silahkan memilih jenis makanan \n" +
-                                             "(Jawab dengan angka saja)\n" +
-                                             "\n" +
-                                             "1.Makanan\n" +
-                                             "2.Minuman\n" +
-                                             "3.Lauk saja";
-                                     try {
-                                         action.sendReply(getApplicationContext(),"Baik Pesananmu Akan Kami Hantarkan");
-                                         action.sendReply(getApplicationContext(),messgMenu);
-                                     } catch (PendingIntent.CanceledException e) {
-                                         e.printStackTrace();
-                                     }
-                                 } else if(pesn.size() == 4 && pesn.get(3).equals("2")){
-                                     //pesanan tidak di hantarkan
-                                     listCustomer.get(index).setPesananDihantarkan(false);
-                                 } else if(pesn.size() == 5 && pesn.get(4).equals("1")){
-                                     //pesananan dihantarkan
-                                     //1 = pesanan berupa makanan
-                                     try {
-                                         action.sendReply(getApplicationContext(),
-                                                 "Silahkan memilih menu makanan \n" +
-                                                 "(Jawab dengan angka saja)\n" +
-                                                 "\n" +
-                                                 "1. Nasi Goreng (10k)\n" +
-                                                 "2. Mie Goreng (10k)\n" +
-                                                 "3. Mie Kuah (10k)\n" +
-                                                 "4. Kwentiu Goreng (10k)");
-                                     } catch (PendingIntent.CanceledException e) {
-                                         e.printStackTrace();
-                                     }
-                                 } else if(pesn.size() == 5 && pesn.get(4).equals("2")){
-                                     ////minuman
-                                     try {
-                                         action.sendReply(getApplicationContext(),
-                                                 "Silahkan  memilih minuman \n"+
-                                                 "(Jawab dengan angka saja)\n" +
-                                                         "\n" +
-                                                 "1. Air Mineral (4k)\n" +
-                                                 "2. Es Teh (3k)\n" +
-                                                 "3. Teh Hangat (3k)\n" +
-                                                 "4. Es Jeruk (3k)\n" +
-                                                 "5. Jeruk Hangat (3k)\n");
-                                     } catch (PendingIntent.CanceledException e) {
-                                         e.printStackTrace();
-                                     }
-
-                                 } else if(pesn.size() == 5 && pesn.get(4).equals("3")){
-                                     //Lauk saja
-                                     try {
-                                         action.sendReply(getApplicationContext(),
-                                                 "Silahkan  memilih menu lauk \n" +
-                                                         "(Jawab dengan angka saja)\n" +
-                                                         "\n" +
-                                                 "1. Ikan Goreng\n" +
-                                                 "2. Kangkung \n" +
-                                                 "3. Oseng Tempe\n" +
-                                                 "4. Semur Sayur\n");
-                                     } catch (PendingIntent.CanceledException e) {
-                                         e.printStackTrace();
-                                     }
-                                 } else if(pesn.size() == 6){
-                                     //index ke 6 = jumlah pesanan
-                                     //Pesanan pesanan = new Pesanan();
-                                     try {
-                                         action.sendReply(getApplicationContext(),"Silahkan ketik jumlah pesanan \n" +
-                                                 "(Jawab dengan angka saja)");
-                                     } catch (PendingIntent.CanceledException e) {
-                                         e.printStackTrace();
-                                     }
-                                 } else if(pesn.size() == 7){
-                                     if(pesn.get(4).equals("1")){
-                                         //khusus makanan
-                                         /*
-                                         index 5 == pilihan makanan
-                                          */
-                                         List<Pesanan> pesananMakanan = listCustomer.get(index).getPesananMakanan();
-                                         Pesanan pesan_1;
-
-                                         switch (Integer.parseInt(pesn.get(5))){
-                                             case 1:
-                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++){
-                                                     pesan_1 = new Pesanan(MenuUtil.Makanan.Nasi_Goreng.name().replaceAll("_"," "),Integer.parseInt("1"),10000);
-                                                     pesananMakanan.add(pesan_1);
-                                                 }
-                                             break;
-                                             case 2:
-                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
-                                                     pesan_1 = new Pesanan(MenuUtil.Makanan.Mie_Goreng.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 10000);
-                                                     pesananMakanan.add(pesan_1);
-                                                 }
-                                                 break;
-                                             case 3:
-                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
-                                                     pesan_1 = new Pesanan(MenuUtil.Makanan.Mie_Kuah.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 10000);
-                                                     pesananMakanan.add(pesan_1);
-                                                 }
-                                                 break;
-                                             case 4:
-                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
-                                                     pesan_1 = new Pesanan(MenuUtil.Makanan.Kweatiu_Goreng.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 8000);
-                                                     pesananMakanan.add(pesan_1);
-                                                 }
-                                                 break;
-                                         }
-                                         listCustomer.get(index).setPesananMakanan(pesananMakanan);
-                                         try {
-                                             action.sendReply(getApplicationContext(),"Apakah anda memesan menu lain ?\n" +
-                                                     "1. Ya\n" +
-                                                     "2. Tidak");
-                                         } catch (PendingIntent.CanceledException e) {
-                                             e.printStackTrace();
-                                         }
-                                         listCustomer.get(index).setStateKondisiMemesan(true);
-
-                                     } else if(pesn.get(4).equals("2")){
-                                         List<Pesanan> pesananMinuman = listCustomer.get(index).getPesananMinuman();
-                                         Pesanan pesan_1;
-                                         switch (Integer.parseInt(pesn.get(5))) {
-                                             case 1:
-                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
-                                                     pesan_1 = new Pesanan(MenuUtil.Minuman.Air_Mineral.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 4000);
-                                                     pesananMinuman.add(pesan_1);
-                                                 }
-                                                 break;
-                                             case 2:
-                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
-                                                     pesan_1 = new Pesanan(MenuUtil.Minuman.Es_Teh.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 3000);
-                                                     pesananMinuman.add(pesan_1);
-                                                 }
-                                                 break;
-                                             case 3:
-                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
-                                                     pesan_1 = new Pesanan(MenuUtil.Minuman.Teh_Hangat.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 3000);
-                                                     pesananMinuman.add(pesan_1);
-                                                 }
-                                                 break;
-                                             case 4:
-                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
-                                                     pesan_1 = new Pesanan(MenuUtil.Minuman.Jeruk_Hangat.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 3000);
-                                                     pesananMinuman.add(pesan_1);
-                                                 }
-                                                 break;
-                                             case 5:
-                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
-                                                     pesan_1 = new Pesanan(MenuUtil.Minuman.Es_Jeruk.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 3000);
-                                                     pesananMinuman.add(pesan_1);
-                                                 }
-                                                 break;
-                                         }
-                                         listCustomer.get(index).setPesananMinuman(pesananMinuman);
-                                         try {
-                                             action.sendReply(getApplicationContext(),"Apakah anda memesan menu lain ?\n" +
-                                                     "1. Ya\n" +
-                                                     "2. Tidak");
-                                         } catch (PendingIntent.CanceledException e) {
-                                             e.printStackTrace();
-                                         }
-                                         listCustomer.get(index).setStateKondisiMemesan(true);
-                                         //khusus minuman
-                                     } else if(pesn.get(4).equals("3"))
-                                     {
-                                         //khusus lauk
-                                         List<Pesanan> pesananLauk = listCustomer.get(index).getPesananSnack();
-                                         Pesanan pesan_1;
-                                         switch (Integer.parseInt(pesn.get(5))) {
-                                             case 1:
-                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
-                                                     pesan_1 = new Pesanan(MenuUtil.Lauk.Ikan_Goreng.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 5000);
-                                                     pesananLauk.add(pesan_1);
-                                                 }
-                                                 break;
-                                             case 2:
-                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
-                                                     pesan_1 = new Pesanan(MenuUtil.Lauk.Kangkung.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 3000);
-                                                     pesananLauk.add(pesan_1);
-                                                 }
-                                                 break;
-                                             case 3:
-                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
-                                                     pesan_1 = new Pesanan(MenuUtil.Lauk.Oseng_Tempe.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 3000);
-                                                     pesananLauk.add(pesan_1);
-                                                 }
-                                                 break;
-                                             case 4:
-                                                 for(int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {
-                                                     pesan_1 = new Pesanan(MenuUtil.Lauk.Semur_Sayur.name().replaceAll("_", " "), Integer.parseInt(pesn.get(6)), 3000);
-                                                     pesananLauk.add(pesan_1);
-                                                 }
-                                                 break;
-                                         }
-                                         listCustomer.get(index).setPesananSnack(pesananLauk);
-                                         try {
-                                             action.sendReply(getApplicationContext(),"Apakah anda memesan menu lain ?\n" +
-                                                     "1. Ya\n" +
-                                                     "2. Tidak");
-                                         } catch (PendingIntent.CanceledException e) {
-                                             e.printStackTrace();
-                                         }
-                                         listCustomer.get(index).setStateKondisiMemesan(true);
-                                     }
-                                 } else if(pesn.size() == 8){
-                                     switch (Integer.parseInt(pesn.get(7))){
-                                         case 1:
-                                             listCustomer.get(index).setStateKondisiMemesan( true);
-                                             //YA
-                                             clear = true;
-                                             //remove 3 ... size desc
-                                             for(int i = pesn.size() - 1; i >  3;i--){
-                                                 pesn.remove(i);
-                                             }
-                                             System.out.println("current size after clean = " + pesn.size());
-                                             String messgMenu = "Silahkan memilih jenis makanan \n" +
-                                                     "(Jawab dengan angka saja)\n" +
-                                                     "\n" +
-                                                     "1.Makanan\n" +
-                                                     "2.Minuman\n" +
-                                                     "3.Lauk saja";
-                                             try {
-                                                 action.sendReply(getApplicationContext(),messgMenu);
-                                             } catch (PendingIntent.CanceledException e) {
-                                                 e.printStackTrace();
-                                             }
-                                             break;
-                                         case 2:
-                                             //TIDAK
-                                             listCustomer.get(index).setStateKondisiMemesan( false);
-                                             String headerText = "KONFIRMASI PESANAN\n";
-                                             StringBuilder sb = new StringBuilder();
-                                             sb.append(headerText);
-                                             sb.append("----------------------------------------------------\n");
-                                             int iterationIndex = 1;
-                                             List<Pesanan> listFilterMakanan, listFilterMinuman, listFilterLaukPauk;
-                                             listFilterMakanan = new ArrayList<>();
-                                             listFilterMinuman = new ArrayList<>();
-                                             listFilterLaukPauk = new ArrayList<>();
-                                             DataDiri dataDiri = listCustomer.get(index).getDataDiri();
-
-                                             String nama = "*Nama = " + dataDiri.getNamaPemesan() + "\n";
-                                             String alamat = "*Alamat = " + dataDiri.getAlamat() + "\n";
-                                             String nomerHp = "*Nomer = " + dataDiri.getNomerHp() + "\n";
-                                             sb.append(nama);
-                                             sb.append(alamat);
-                                             sb.append(nomerHp);
-                                             sb.append("----------------------------------------------------\n");
-
-                                             int total = 0;
-
-                                             if(listCustomer.get(index).getPesananMakanan() != null){
-                                                  listFilterMakanan = removeDuplicatePesanan(listCustomer.get(index).getPesananMakanan());
-                                                  for(Pesanan makanans : listFilterMakanan){
-                                                      String format = String.format("*%d.%s (%d x %d) = %s\n",iterationIndex,makanans.getNamaPesanan(),makanans.getHargaPesanan(),makanans.getJumlahPesanan(),convertRupiah(makanans.getHargaPesanan() * makanans.getJumlahPesanan()));
-                                                      sb.append(format);
-                                                      iterationIndex++;
-                                                      total += makanans.getHargaPesanan() * makanans.getJumlahPesanan();
-                                                  }
-                                             }
-                                             if(listCustomer.get(index).getPesananMinuman() != null){
-                                                 listFilterMinuman = removeDuplicatePesanan(listCustomer.get(index).getPesananMinuman());
-                                                 for(Pesanan minuman : listFilterMinuman){
-                                                     String format = String.format("*%d.%s (%d x %d) = %s\n",iterationIndex,minuman.getNamaPesanan(),minuman.getHargaPesanan() , minuman.getJumlahPesanan(),convertRupiah(minuman.getHargaPesanan() * minuman.getJumlahPesanan()));
-                                                     sb.append(format);
-                                                     iterationIndex++;
-
-                                                     total += minuman.getHargaPesanan() * minuman.getJumlahPesanan();
-                                                 }
-                                             }
-                                             if(listCustomer.get(index).getPesananSnack() != null){
-                                                 listFilterLaukPauk = removeDuplicatePesanan(listCustomer.get(index).getPesananSnack());
-                                                 for(Pesanan lauk : listFilterLaukPauk){
-                                                     String format = String.format("*%d.%s (%d x %d) = %s\n",iterationIndex,lauk.getNamaPesanan(),lauk.getHargaPesanan() ,lauk.getJumlahPesanan() ,convertRupiah(lauk.getHargaPesanan() * lauk.getJumlahPesanan()));
-                                                     sb.append(format);
-                                                     iterationIndex++;
-                                                     total += lauk.getHargaPesanan() * lauk.getJumlahPesanan();
-                                                 }
-                                             }
-                                             listCustomer.get(index).setTotalPesanan(total);
-                                             sb.append("----------------------------------------------------\n");
-                                             String totalStr = "*Total = " + convertRupiah(total) + "\n";
-                                             sb.append(totalStr);
-                                             listCustomer.get(index).setMessageTagihan(sb.toString());
-                                             sb.append("----------------------------------------------------\n\n");
-                                             String ask = "Apakah sudah sesuai dengan pesananmu ? \n" +
-                                                     "(Jawab Dengan Angka Saja).   \n" +
-                                                     "   1. IYA\n" +
-                                                     "   2. TIDAK\n";
-                                             sb.append(ask);
-                                             System.out.println(sb.toString() + " SB dude");
-                                             try {
-                                                 action.sendReply(getApplicationContext(),sb.toString());
-                                             } catch (PendingIntent.CanceledException e) {
-                                                 e.printStackTrace();
-                                             }
-                                             break;
-                                     }
-                                 } else if(pesn.size() == 9){
-                                     switch(Integer.parseInt(pesn.get(8))){
-                                         case 1:
-                                             String pesananDiterima = "Pesanan telah di konfirmasi, makanan akan kami proses jadi mohon ditunggu Terima Kasih";
-                                             try {
-                                                 action.sendReply(getApplicationContext(),pesananDiterima);
-                                             } catch (PendingIntent.CanceledException e) {
-                                                 e.printStackTrace();
-                                             }
-                                             List<Pesanan> semuaPesanan = new ArrayList<>();
-                                             if(listCustomer.get(index).getPesananMakanan() != null){
-
-                                                 for(Pesanan pesananMakanan : listCustomer.get(index).getPesananMakanan()){
-                                                     semuaPesanan.add(pesananMakanan);
-                                                 }
-                                             }
-                                             if(listCustomer.get(index).getPesananMinuman() != null){
-                                                 for(Pesanan pesananMinuman : listCustomer.get(index).getPesananMinuman()){
-                                                     semuaPesanan.add(pesananMinuman);
-                                                 }
-                                             }
-                                             if(listCustomer.get(index).getPesananSnack() != null){
-                                                for(Pesanan pesananLauk : listCustomer.get(index).getPesananSnack()){
-                                                    semuaPesanan.add(pesananLauk);
-                                                }
-                                             }
-                                             listCustomer.get(index).setSemuaPesanan(semuaPesanan);
-                                             listValidCustomer.add(listCustomer.get(index));
-                                             saveListValidCustomer(listValidCustomer);
-                                             break;
-                                         case 2:
-                                             listCustomer.get(index).setStateKondisiMemesan( true);
-                                             //YA
-                                             clear = true;
-                                             //remove 3 ... size desc
-                                             for(int i = pesn.size() - 1; i >  3;i--){
-                                                 pesn.remove(i);
-                                             }
-                                             System.out.println("current size after clean = " + pesn.size());
-                                             String messgMenu = "Silahkan memilih jenis makanan \n" +
-                                                     "(Jawab dengan angka saja)\n" +
-                                                     "\n" +
-                                                     "1.Makanan\n" +
-                                                     "2.Minuman\n" +
-                                                     "3.Lauk saja";
-                                             try {
-                                                 action.sendReply(getApplicationContext(),messgMenu);
-                                             } catch (PendingIntent.CanceledException e) {
-                                                 e.printStackTrace();
-                                             }
-                                             break;
-                                     }
-
-                                 } else if(pesn.get(pesn.size() - 1).equals("RESET")){
-                                     listCustomer.get(index).getListMessage().clear();
-                                     System.out.println("RESET BERHASIL");
-                                 }
-                                 System.out.println("size chat not null when user exist on list = " + pesn.size());
-                                 listCustomer.set(index,listCustomer.get(index)).setListMessage(pesn);
-                                 saveModelList(listCustomer);
-                            } else{
-                            System.out.println("data di tambahkan");
-                            }
-                        }
-                        if(apakahSama == false){
-                            List<String> chatA = new ArrayList<>();
-                            List<Pesanan> pesananMakanan = new ArrayList<>();
-                            List<Pesanan> pesananMinuman = new ArrayList<>();
-                            List<Pesanan> pesananLaukPauk = new ArrayList<>();
-                            chatA.add(message);
-                            if(chatA.size() == 1) {
-                                Action action = NotificationUtils.getQuickReplyAction(sbn.getNotification(), sbn.getPackageName());
-                                try {
-                                    action.sendReply(getApplicationContext(), "" +
-                                            "Selamat Datang Di Resto Enak!!!\n" +
-                                            "Apakah anda ingin memesan? \n" +
-                                            "(jawab dengan angka saja)\n" +
-                                            " 1. YA\n" + "2. TIDAK");
-                                } catch (PendingIntent.CanceledException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            listCustomer.add(new Customer(from,chatA,pesananMakanan,pesananMinuman,pesananLaukPauk,false));
-                            saveModelList(listCustomer);
-                        }
-                    }
-                }
-            }
-        }
-
-
-    }
-    static String convertRupiah(int num){
-        DecimalFormat kursIndonesia = (DecimalFormat) DecimalFormat.getCurrencyInstance();
-        DecimalFormatSymbols formatRp = new DecimalFormatSymbols();
-        formatRp.setCurrencySymbol("Rp. ");
-        formatRp.setMonetaryDecimalSeparator(',');
-        formatRp.setGroupingSeparator('.');
-        kursIndonesia.setDecimalFormatSymbols(formatRp);
-        return kursIndonesia.format(num).substring(0,kursIndonesia.format(num).length() - 3)
-                ;
-
-    }
-    List<Pesanan> removeDuplicatePesanan(List<Pesanan> listMakanan){
-        Pesanan[] names = new Pesanan[listMakanan.size()];
-        for(int i = 0; i < listMakanan.size(); i++){
-            names[i] = listMakanan.get(i);
-        }
-
-        HashMap<String, Integer> repeatNames = new HashMap<String, Integer>();
-        List<Pesanan> pesananNew = new ArrayList<>();
-        int repeatCount = 0;
-        for (int i = 0; i < names.length; i++) {
-            int count = 0;
-            for (int k = 0; k < names.length; k++) {
-                if (names[i].getNamaPesanan().equals( names[k].getNamaPesanan())) {
-                    count++;
-                }
-            }
-            if (count >= 1) {
-                if (!repeatNames.containsKey(names[i].getNamaPesanan())) {
-                    System.out.println(names[i].getNamaPesanan() + ":" + count + " wasu");
-                    pesananNew.add(new Pesanan(names[i].getNamaPesanan(),count,names[i].getHargaPesanan()));
-                    repeatNames.put(names[i].getNamaPesanan(), count);
-                    repeatCount += count;
-                }
-            }
-        }
-        for(int i = 0; i < pesananNew.size(); i++){
-            System.out.printf("%s = %d %n" ,pesananNew.get(i).getNamaPesanan(),pesananNew.get(i).getJumlahPesanan() * pesananNew.get(i).getHargaPesanan());
-        }
-        System.out.println("Total Count:" + repeatCount);
-        return pesananNew;
-    }
-
-
-    void saveListValidCustomer(List<Customer> listCustomer){
-        SharedPreferences sharedPreferences;
-        sharedPreferences = getApplicationContext().getSharedPreferences("ORDERAN_DITERIMA", Context.MODE_PRIVATE);
-        Gson gson = new Gson();
-        System.out.println("Json Save Valid = " + gson.toJson(listCustomer));
-        sharedPreferences.edit().putString("KEY_ORDER",gson.toJson(listCustomer)).commit();
-        Toast.makeText(getApplicationContext(),"Model Saved", Toast.LENGTH_LONG).show();
-    }
-    List<Customer> getListValidCustomer(){
-        SharedPreferences sharedPreferences;
-        sharedPreferences = getApplicationContext().getSharedPreferences("ORDERAN_DITERIMA",Context.MODE_PRIVATE);
-        Gson gson = new Gson();
-        Type typeCustomer = new TypeToken<List<Customer>>(){}.getType();
-        System.out.println("Json Load valid = " + sharedPreferences.getString("KEY_ORDER",""));
-        List<Customer> listCust = gson.fromJson(sharedPreferences.getString("KEY_ORDER",""),typeCustomer);
-        return listCust;
-    }
-    void saveModelList(List<Customer> listCustomer){
-        SharedPreferences sharedPreferences;
-        sharedPreferences = getApplicationContext().getSharedPreferences("PREF_CUST", Context.MODE_PRIVATE);
-        Gson gson = new Gson();
-        System.out.println("Json Save = " + gson.toJson(listCustomer));
-        sharedPreferences.edit().putString("MODEL_CUST_KEY",gson.toJson(listCustomer)).commit();
-        Toast.makeText(getApplicationContext(),"Model Saved", Toast.LENGTH_LONG).show();
-    }
-
-    List<Customer> getModelCustomer(){
-        SharedPreferences sharedPreferences;
-        sharedPreferences = getApplicationContext().getSharedPreferences("PREF_CUST",Context.MODE_PRIVATE);
-        Gson gson = new Gson();
-        Type typeCustomer = new TypeToken<List<Customer>>(){}.getType();
-        System.out.println("Json Load = " + sharedPreferences.getString("MODEL_CUST_KEY",""));
-        List<Customer> listCust = gson.fromJson(sharedPreferences.getString("MODEL_CUST_KEY",""),typeCustomer);
-        return listCust;
-    }
-
-
-    void sendMessageToFragmentAndFilter(String from , String message_text){
-            Intent intentData = new Intent("NOTIFICzATION_DATA");
-            intentData.putExtra("FROM",from);
-            intentData.putExtra("CHAT",message_text);
-            sendBroadcast(intentData);
-    }
-    @Override
-    public IBinder onBind(Intent intent) {
-        return super.onBind(intent);
-    }
-
-    @Override
-    public void onListenerConnected() {
-        super.onListenerConnected();
-        Toast.makeText(getApplicationContext(),"Notification Listener Conected !",Toast.LENGTH_SHORT).show();
-    }
-}
+package com.nicomot.re_food.service;import android.app.PendingIntent;import android.content.Context;import android.content.Intent;import android.content.SharedPreferences;import android.os.Bundle;import android.os.IBinder;import android.service.notification.NotificationListenerService;import android.service.notification.StatusBarNotification;import android.widget.Toast;import androidx.core.app.NotificationCompat;import com.google.gson.Gson;import com.google.gson.reflect.TypeToken;import com.nicomot.re_food.R;import com.nicomot.re_food.model.Customer;import com.nicomot.re_food.model.DataDiri;import com.nicomot.re_food.model.Menu;import com.nicomot.re_food.model.Pesanan;import com.nicomot.re_food.models.Action;import com.nicomot.re_food.robj.notificationhelperlibrary.utils.NotificationUtils;import com.nicomot.re_food.util.MenuUtil;import com.nicomot.re_food.util.ShowMessage;import java.lang.reflect.Type;import java.text.DecimalFormat;import java.text.DecimalFormatSymbols;import java.util.ArrayList;import java.util.HashMap;import java.util.List;import java.util.Locale;public class ServiceNotificationListener extends NotificationListenerService {    List<Customer> listCustomer;    List<Customer> listValidCustomer;    List<String> chat;    private static final String WA_PACKAGE = "com.whatsapp";    @Override    public void onNotificationPosted(StatusBarNotification sbn) {        super.onNotificationPosted(sbn);        System.out.println("COK");        if (sbn.getPackageName().contains(WA_PACKAGE)) {            Bundle bundle = sbn.getNotification().extras;            String from = bundle.getString(NotificationCompat.EXTRA_TITLE);            String message = bundle.getString(NotificationCompat.EXTRA_TEXT);            listCustomer = getModelCustomer();            listValidCustomer = getListValidCustomer();            if (listValidCustomer == null) {                listValidCustomer = new ArrayList<>();            }            boolean clear = false;            chat = new ArrayList<>();            if(message.contains("new messages") || message.contains("pesan baru")){            } else if (message != null && from != null) {                    if (from.contains("+62")) {                        //  sendMessageToFragmentAndFilter(from,message);                        if (listCustomer == null) {                            chat.add(message);                            listCustomer = new ArrayList<>();                            listValidCustomer = new ArrayList<>();                            List<Pesanan> pesananMakanan = new ArrayList<>();                            List<Pesanan> pesananMinuman = new ArrayList<>();                            List<Pesanan> pesananLaukPauk = new ArrayList<>();                            chat.add(message);                            listCustomer.add(new Customer(from, chat, pesananMakanan, pesananMinuman, pesananLaukPauk, false));                            System.out.println("ter eksekusi anjing size = " + chat.size());                            if (chat.size() == 1) {                                Action action = NotificationUtils.getQuickReplyAction(sbn.getNotification(), sbn.getPackageName());                                try {                                    action.sendReply(getApplicationContext(), "" +                                            "Selamat Datang Di Resto Enak!!!\n" +                                            "Apakah anda ingin memesan? \n" +                                            "(jawab dengan angka saja)\n" +                                            "1. YA\n" + "2. TIDAK");                                } catch (PendingIntent.CanceledException e) {                                    e.printStackTrace();                                }                            }                            saveModelList(listCustomer);                        }   else {                            boolean apakahSama = false;                                int endSize = listCustomer.size();                            for (int index = 0; index < listCustomer.size(); index++) {                                if (listCustomer.get(index).getName().equals(from)) {                                    System.out.println("sama" + listCustomer.get(index).getName() + " = " + from);                                    List<String> pesn = listCustomer.get(index).getListMessage();                                    apakahSama = true;                                    pesn.add(message);                                    System.out.println("ter eksekusi kaga");                                    Action action = NotificationUtils.getQuickReplyAction(sbn.getNotification(), sbn.getPackageName());                                    if(pesn.size() == 2 && pesn.get(1).equals("1") && listCustomer.get(index).isStateKondisiMemesan() == false) {                                        try {                                            action.sendReply(getApplicationContext(), "Silahkan mengisi data diri untuk proses pengiriman.\n" +                                                    "\n" +                                                    "Nama Pemesan :\n" +                                                    "Alamat lengkap  :\n" +                                                    "Nomor Hp            :");                                        } catch (PendingIntent.CanceledException e) {                                            e.printStackTrace();                                        }                                    } else if (pesn.size() == 3 && pesn.get(2).contains("Nama Pemesan") || pesn.get(2).contains("Silahkan mengisi data diri") && listCustomer.get(index).isStateKondisiMemesan() == false) {                                        DataDiri dataPribadiUser = new DataDiri("", "", "");                                        if (pesn.get(2).split(" : ").length != 1) {                                            String arr[] = pesn.get(2).split(" : ");                                            dataPribadiUser = new DataDiri(arr[1], arr[2], arr[3]);                                        } else if (pesn.get(2).split(":").length != 1) {                                            String arr[] = pesn.get(2).split(":");                                            dataPribadiUser = new DataDiri(arr[1], arr[2], arr[3]);                                        } else if (pesn.get(2).split(": ").length != 1) {                                            String arr[] = pesn.get(2).split(": ");                                            dataPribadiUser = new DataDiri(arr[1], arr[2], arr[3]);                                        } else if (pesn.get(2).split(" :").length != 1) {                                            String arr[] = pesn.get(2).split(" :");                                            dataPribadiUser = new DataDiri(arr[1], arr[2], arr[3]);                                        }                                        String nomorClean = dataPribadiUser.getNomerHp().trim();                                        String namaClean = dataPribadiUser.getNamaPemesan().replaceAll("Alamat lengkap", "").trim();                                        String alamatClean = dataPribadiUser.getAlamat().replaceAll("Nomor Hp", "").trim();                                        dataPribadiUser.setAlamat(alamatClean);                                        dataPribadiUser.setNamaPemesan(namaClean);                                        dataPribadiUser.setNomerHp(nomorClean);                                        listCustomer.get(index).setDataDiri(dataPribadiUser);                                        String messg = "Apakah pesanan anda ingin di antar?\n" +                                                "\n" +                                                "1. YA\n" +                                                "2. TIDAK\n \n (jawab dengan angka saja)";                                        try {                                            action.sendReply(getApplicationContext(), messg);                                        } catch (PendingIntent.CanceledException e) {                                            e.printStackTrace();                                        }                                    } else if (pesn.size() == 4 && pesn.get(3).equals("1")) {                                        listCustomer.get(index).setPesananDihantarkan(true);                                        String messgMenu = "Silahkan memilih jenis makanan \n" +                                                "(Jawab dengan angka saja)\n" +                                                "\n" +                                                "1.Makanan\n" +                                                "2.Minuman\n" +                                                "3.Lauk saja";                                        try {                                            action.sendReply(getApplicationContext(), "Baik Pesananmu Akan Kami Hantarkan");                                            action.sendReply(getApplicationContext(), messgMenu);                                        } catch (PendingIntent.CanceledException e) {                                            e.printStackTrace();                                        }                                    } else if (pesn.size() == 4 && pesn.get(3).equals("1") && listCustomer.get(index).isStateKondisiMemesan() == true && message.equals("1")) {                                        listCustomer.get(index).setPesananDihantarkan(true);                                        String messgMenu = "Silahkan memilih jenis makanan \n" +                                                "(Jawab dengan angka saja)\n" +                                                "\n" +                                                "1.Makanan\n" +                                                "2.Minuman\n" +                                                "3.Lauk saja";                                        try {                                            action.sendReply(getApplicationContext(), "Baik Pesananmu Akan Kami Hantarkan");                                            action.sendReply(getApplicationContext(), messgMenu);                                        } catch (PendingIntent.CanceledException e) {                                            e.printStackTrace();                                        }                                    } else if (pesn.size() == 4 && pesn.get(3).equals("2")) {                                        //pesanan tidak di hantarkan                                        listCustomer.get(index).setPesananDihantarkan(false);                                    } else if (pesn.size() == 5 && pesn.get(4).equals("1")) {                                        //pesananan dihantarkan                                        //1 = pesanan berupa makanan                                        StringBuilder sbMenuMakananAvailable = new StringBuilder();                                        List<Menu> listMenuMakanan = getMenuMakanan();                                        int i = 1;                                        for (Menu menu : listMenuMakanan) {                                            if (i != listMenuMakanan.size()) {                                                int stockItem = menu.getStockItem();                                                if (stockItem != 0) {                                                    sbMenuMakananAvailable.append(i + ". " + menu.getNamaItem() + " (" + getHargaDalamK(menu.getHargaItem()) + ") tersisa " + menu.getStockItem() + "\n");                                                    i++;                                                }                                            }                                        }                                        try {                                            action.sendReply(getApplicationContext(),                                                    "Silahkan memilih menu makanan \n" +                                                            "(Jawab dengan angka saja)\n" +                                                            "\n" + sbMenuMakananAvailable.toString());                                        } catch (PendingIntent.CanceledException e) {                                            e.printStackTrace();                                        }                                    } else if (pesn.size() == 5 && pesn.get(4).equals("2")) {                                        ////minuman                                        StringBuilder sbMenuMinuman = new StringBuilder();                                        List<Menu> listMenuMinuman = getMenuMinuman();                                        int i = 1;                                        for (Menu menu : listMenuMinuman) {                                            if (i != listMenuMinuman.size()) {                                                int stockItem = menu.getStockItem();                                                if (stockItem != 0) {                                                    sbMenuMinuman.append(i + ". " + menu.getNamaItem() + " (" + getHargaDalamK(menu.getHargaItem()) + ") tersisa " + menu.getStockItem() + " \n");                                                    i++;                                                }                                            }                                        }                                        try {                                            action.sendReply(getApplicationContext(),                                                    "Silahkan  memilih minuman \n" +                                                            "(Jawab dengan angka saja)\n" +                                                            "\n" +                                                            sbMenuMinuman.toString());                                        } catch (PendingIntent.CanceledException e) {                                            e.printStackTrace();                                        }                                    } else if (pesn.size() == 5 && pesn.get(4).equals("3")) {                                        //Lauk saja                                        StringBuilder sbMenuLauk = new StringBuilder();                                        List<Menu> listMenuLauk = getMenuLauk();                                        int i = 1;                                        for (Menu menu : listMenuLauk) {                                            if (i != listMenuLauk.size()) {                                                int stockItem = menu.getStockItem();                                                if (stockItem != 0) {                                                    sbMenuLauk.append(i + ". " + menu.getNamaItem() + " (" + getHargaDalamK(menu.getHargaItem()) + ") tersisa " + menu.getStockItem() + "  \n");                                                    i++;                                                }                                            }                                        }                                        try {                                            action.sendReply(getApplicationContext(),                                                    "Silahkan  memilih menu lauk \n" +                                                            "(Jawab dengan angka saja)\n" +                                                            "\n" + sbMenuLauk.toString());                                        } catch (PendingIntent.CanceledException e) {                                            e.printStackTrace();                                        }                                    } else if (pesn.size() == 6) {                                        //index ke 6 = jumlah pesanan                                        //Pesanan pesanan = new Pesanan();                                        try {                                            action.sendReply(getApplicationContext(), "Silahkan ketik jumlah pesanan \n" +                                                    "(Jawab dengan angka saja)");                                        } catch (PendingIntent.CanceledException e) {                                            e.printStackTrace();                                        }                                    } else if (pesn.size() == 7) {                                        if (pesn.get(4).equals("1")) {                                            //khusus makanan                                         /*                                         index 5 == pilihan makanan                                          */                                            List<Pesanan> pesananMakanan = listCustomer.get(index).getPesananMakanan();                                            List<Menu> listMenuMakanan = getMenuMakanan();                                            Menu selectedMenu = listMenuMakanan.get(Integer.parseInt(pesn.get(5)) - 1);                                            for (int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {                                                Pesanan pesananMakanan_baru = new Pesanan(selectedMenu.getNamaItem(), Integer.parseInt(pesn.get(6)), selectedMenu.getHargaItem());                                                pesananMakanan.add(pesananMakanan_baru);                                            }                                            int kurangStock = listMenuMakanan.get(Integer.parseInt(pesn.get(5)) - 1).getStockItem() - Integer.parseInt(pesn.get(6));                                            listMenuMakanan.get(Integer.parseInt(pesn.get(5)) - 1).setStockItem(kurangStock);                                            saveMenuMakan(listMenuMakanan);                                            listCustomer.get(index).setPesananMakanan(pesananMakanan);                                            try {                                                action.sendReply(getApplicationContext(), "Apakah anda memesan menu lain ?\n" +                                                        "1. Ya\n" +                                                        "2. Tidak");                                            } catch (PendingIntent.CanceledException e) {                                                e.printStackTrace();                                            }                                            listCustomer.get(index).setStateKondisiMemesan(true);                                        } else if (pesn.get(4).equals("2")) {                                            //khusus minuman                                            List<Pesanan> pesananMinuman = listCustomer.get(index).getPesananMinuman();                                            List<Menu> listMenuMinuman = getMenuMinuman();                                            Menu selectedMenu = listMenuMinuman.get(Integer.parseInt(pesn.get(5)) - 1);                                            for (int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {                                                Pesanan pesananMinumanBaru = new Pesanan(selectedMenu.getNamaItem(), Integer.parseInt(pesn.get(6)), selectedMenu.getHargaItem());                                                pesananMinuman.add(pesananMinumanBaru);                                            }                                            int kurangStock = listMenuMinuman.get(Integer.parseInt(pesn.get(5)) - 1).getStockItem() - Integer.parseInt(pesn.get(6));                                            listMenuMinuman.get(Integer.parseInt(pesn.get(5)) - 1).setStockItem(kurangStock);                                            saveMenuMinuman(listMenuMinuman);                                            listCustomer.get(index).setPesananMinuman(pesananMinuman);                                            try {                                                action.sendReply(getApplicationContext(), "Apakah anda memesan menu lain ?\n" +                                                        "1. Ya\n" +                                                        "2. Tidak");                                            } catch (PendingIntent.CanceledException e) {                                                e.printStackTrace();                                            }                                            listCustomer.get(index).setStateKondisiMemesan(true);                                        } else if (pesn.get(4).equals("3")) {                                            //khusus lauk                                            List<Pesanan> pesananLauk = listCustomer.get(index).getPesananSnack();                                            List<Menu> listMenuLauk = getMenuLauk();                                            Menu selectedMenu = listMenuLauk.get(Integer.parseInt(pesn.get(5)) - 1);                                            for (int i = 0; i < Integer.parseInt(pesn.get(6)); i++) {                                                Pesanan pesananLaukBaru = new Pesanan(selectedMenu.getNamaItem(), Integer.parseInt(pesn.get(6)), selectedMenu.getHargaItem());                                                pesananLauk.add(pesananLaukBaru);                                            }                                            int kurangStock = listMenuLauk.get(Integer.parseInt(pesn.get(5)) - 1).getStockItem() - Integer.parseInt(pesn.get(6));                                            listMenuLauk.get(Integer.parseInt(pesn.get(5)) - 1).setStockItem(kurangStock);                                            saveMenuLauk(listMenuLauk);                                            listCustomer.get(index).setPesananSnack(pesananLauk); // save                                            try {                                                action.sendReply(getApplicationContext(), "Apakah anda memesan menu lain ?\n" +                                                        "1. Ya\n" +                                                        "2. Tidak");                                            } catch (PendingIntent.CanceledException e) {                                                e.printStackTrace();                                            }                                            listCustomer.get(index).setStateKondisiMemesan(true);                                        }                                    } else if (pesn.size() == 8) {                                        switch (Integer.parseInt(pesn.get(7))) {                                            case 1:                                                listCustomer.get(index).setStateKondisiMemesan(true);                                                //YA                                                clear = true;                                                //remove 3 ... size desc                                                for (int i = pesn.size() - 1; i > 3; i--) {                                                    pesn.remove(i);                                                }                                                String messgMenu = "Silahkan memilih jenis makanan \n" +                                                        "(Jawab dengan angka saja)\n" +                                                        "\n" +                                                        "1.Makanan\n" +                                                        "2.Minuman\n" +                                                        "3.Lauk saja";                                                try {                                                    action.sendReply(getApplicationContext(), messgMenu);                                                } catch (PendingIntent.CanceledException e) {                                                    e.printStackTrace();                                                }                                                break;                                            case 2:                                                //TIDAK                                                listCustomer.get(index).setStateKondisiMemesan(false);                                                String headerText = "KONFIRMASI PESANAN\n";                                                StringBuilder sb = new StringBuilder();                                                sb.append(headerText);                                                sb.append("----------------------------------------------------\n");                                                int iterationIndex = 1;                                                List<Pesanan> listFilterMakanan, listFilterMinuman, listFilterLaukPauk;                                                listFilterMakanan = new ArrayList<>();                                                listFilterMinuman = new ArrayList<>();                                                listFilterLaukPauk = new ArrayList<>();                                                DataDiri dataDiri = listCustomer.get(index).getDataDiri();                                                String nama = "*Nama = " + dataDiri.getNamaPemesan() + "\n";                                                String alamat = "*Alamat = " + dataDiri.getAlamat() + "\n";                                                String nomerHp = "*Nomer = " + dataDiri.getNomerHp() + "\n";                                                sb.append(nama);                                                sb.append(alamat);                                                sb.append(nomerHp);                                                sb.append("----------------------------------------------------\n");                                                int total = 0;                                                if (listCustomer.get(index).getPesananMakanan() != null) {                                                    listFilterMakanan = removeDuplicatePesanan(listCustomer.get(index).getPesananMakanan());                                                    for (Pesanan makanans : listFilterMakanan) {                                                        String format = String.format("*%d.%s (%d x %d) = %s\n", iterationIndex, makanans.getNamaPesanan(), makanans.getHargaPesanan(), makanans.getJumlahPesanan(), convertRupiah(makanans.getHargaPesanan() * makanans.getJumlahPesanan()));                                                        sb.append(format);                                                        iterationIndex++;                                                        total += makanans.getHargaPesanan() * makanans.getJumlahPesanan();                                                    }                                                }                                                if (listCustomer.get(index).getPesananMinuman() != null) {                                                    listFilterMinuman = removeDuplicatePesanan(listCustomer.get(index).getPesananMinuman());                                                    for (Pesanan minuman : listFilterMinuman) {                                                        String format = String.format("*%d.%s (%d x %d) = %s\n", iterationIndex, minuman.getNamaPesanan(), minuman.getHargaPesanan(), minuman.getJumlahPesanan(), convertRupiah(minuman.getHargaPesanan() * minuman.getJumlahPesanan()));                                                        sb.append(format);                                                        iterationIndex++;                                                        total += minuman.getHargaPesanan() * minuman.getJumlahPesanan();                                                    }                                                }                                                if (listCustomer.get(index).getPesananSnack() != null) {                                                    listFilterLaukPauk = removeDuplicatePesanan(listCustomer.get(index).getPesananSnack());                                                    for (Pesanan lauk : listFilterLaukPauk) {                                                        String format = String.format("*%d.%s (%d x %d) = %s\n", iterationIndex, lauk.getNamaPesanan(), lauk.getHargaPesanan(), lauk.getJumlahPesanan(), convertRupiah(lauk.getHargaPesanan() * lauk.getJumlahPesanan()));                                                        sb.append(format);                                                        iterationIndex++;                                                        total += lauk.getHargaPesanan() * lauk.getJumlahPesanan();                                                    }                                                }                                                listCustomer.get(index).setTotalPesanan(total);                                                sb.append("----------------------------------------------------\n");                                                String totalStr = "*Total = " + convertRupiah(total) + "\n";                                                sb.append(totalStr);                                                listCustomer.get(index).setMessageTagihan(sb.toString());                                                sb.append("----------------------------------------------------\n\n");                                                String ask = "Apakah sudah sesuai dengan pesananmu ? \n" +                                                        "(Jawab Dengan Angka Saja).   \n" +                                                        "   1. IYA\n" +                                                        "   2. TIDAK\n";                                                sb.append(ask);                                                try {                                                    action.sendReply(getApplicationContext(), sb.toString());                                                } catch (PendingIntent.CanceledException e) {                                                    e.printStackTrace();                                                }                                                break;                                        }                                    } else if (pesn.size() == 9) {                                        switch (Integer.parseInt(pesn.get(8))) {                                            case 1:                                                String pesananDiterima = "Pesanan telah di konfirmasi, makanan akan kami proses jadi mohon ditunggu Terima Kasih";                                                try {                                                    action.sendReply(getApplicationContext(), pesananDiterima);                                                } catch (PendingIntent.CanceledException e) {                                                    e.printStackTrace();                                                }                                                List<Pesanan> semuaPesanan = new ArrayList<>();                                                if (listCustomer.get(index).getPesananMakanan() != null) {                                                    for (Pesanan pesananMakanan : listCustomer.get(index).getPesananMakanan()) {                                                        semuaPesanan.add(pesananMakanan);                                                    }                                                }                                                if (listCustomer.get(index).getPesananMinuman() != null) {                                                    for (Pesanan pesananMinuman : listCustomer.get(index).getPesananMinuman()) {                                                        semuaPesanan.add(pesananMinuman);                                                    }                                                }                                                if (listCustomer.get(index).getPesananSnack() != null) {                                                    for (Pesanan pesananLauk : listCustomer.get(index).getPesananSnack()) {                                                        semuaPesanan.add(pesananLauk);                                                    }                                                }                                                listCustomer.get(index).setSemuaPesanan(semuaPesanan);                                                listValidCustomer.add(listCustomer.get(index));                                                saveListValidCustomer(listValidCustomer);                                                listCustomer.get(index).setListMessage(new ArrayList<>());                                                saveModelList(listCustomer);                                                break;                                            case 2:                                                listCustomer.get(index).setStateKondisiMemesan(true);                                                //YA                                                clear = true;                                                //remove 3 ... size desc                                                for (int i = pesn.size() - 1; i > 3; i--) {                                                    pesn.remove(i);                                                }                                                String messgMenu = "Silahkan memilih jenis makanan \n" +                                                        "(Jawab dengan angka saja)\n" +                                                        "\n" +                                                        "1.Makanan\n" +                                                        "2.Minuman\n" +                                                        "3.Lauk saja";                                                try {                                                    action.sendReply(getApplicationContext(), messgMenu);                                                } catch (PendingIntent.CanceledException e) {                                                    e.printStackTrace();                                                }                                                break;                                        }                                    } else if (pesn.get(pesn.size() - 1).equals("RESET")) {                                        listCustomer.get(index).getListMessage().clear();                                    }                                     listCustomer.set(index, listCustomer.get(index)).setListMessage(pesn);                                    saveModelList(listCustomer);                                }                            }                            if (apakahSama == false) {                                List<String> chatA = new ArrayList<>();                                List<Pesanan> pesananMakanan = new ArrayList<>();                                List<Pesanan> pesananMinuman = new ArrayList<>();                                List<Pesanan> pesananLaukPauk = new ArrayList<>();                                chatA.add(message);                                System.out.println("ter ekesui wado");                                if (chatA.size() == 1) {                                    Action action = NotificationUtils.getQuickReplyAction(sbn.getNotification(), sbn.getPackageName());                                    try {                                        action.sendReply(getApplicationContext(), "" +                                                "Selamat Datang Di Resto Enak!!!\n" +                                                "Apakah anda ingin memesan? \n" +                                                "(jawab dengan angka saja)\n" +                                                " 1. YA\n" + "2. TIDAK");                                    } catch (PendingIntent.CanceledException e) {                                        e.printStackTrace();                                    }                                }                                listCustomer.add(new Customer(from, chatA, pesananMakanan, pesananMinuman, pesananLaukPauk, false));                                saveModelList(listCustomer);                            }                        }                    }                }            }        }    static String getHargaDalamK(int harga){        String harg = String.valueOf( harga);        if(harg.length() == 4){            return harg.substring(0,1) + "k";        } else if(harg.length() == 5){            return harg.substring(0,2) + "k";        } else if(harg.length() == 6){            return  harg.substring(0,3) + "k";        }        return "";    }    static String convertRupiah(int num){        DecimalFormat kursIndonesia = (DecimalFormat) DecimalFormat.getCurrencyInstance();        DecimalFormatSymbols formatRp = new DecimalFormatSymbols();        formatRp.setCurrencySymbol("Rp. ");        formatRp.setMonetaryDecimalSeparator(',');        formatRp.setGroupingSeparator('.');        kursIndonesia.setDecimalFormatSymbols(formatRp);        return kursIndonesia.format(num).substring(0,kursIndonesia.format(num).length() - 3)                ;    }    List<Pesanan> removeDuplicatePesanan(List<Pesanan> listMakanan){        Pesanan[] names = new Pesanan[listMakanan.size()];        for(int i = 0; i < listMakanan.size(); i++){            names[i] = listMakanan.get(i);        }        HashMap<String, Integer> repeatNames = new HashMap<String, Integer>();        List<Pesanan> pesananNew = new ArrayList<>();        int repeatCount = 0;        for (int i = 0; i < names.length; i++) {            int count = 0;            for (int k = 0; k < names.length; k++) {                if (names[i].getNamaPesanan().equals( names[k].getNamaPesanan())) {                    count++;                }            }            if (count >= 1) {                if (!repeatNames.containsKey(names[i].getNamaPesanan())) {                    pesananNew.add(new Pesanan(names[i].getNamaPesanan(),count,names[i].getHargaPesanan()));                    repeatNames.put(names[i].getNamaPesanan(), count);                    repeatCount += count;                }            }        }        for(int i = 0; i < pesananNew.size(); i++){            System.out.printf("%s = %d %n" ,pesananNew.get(i).getNamaPesanan(),pesananNew.get(i).getJumlahPesanan() * pesananNew.get(i).getHargaPesanan());        }        return pesananNew;    }    void saveListValidCustomer(List<Customer> listCustomer){        SharedPreferences sharedPreferences;        sharedPreferences = getApplicationContext().getSharedPreferences("ORDERAN_DITERIMA", Context.MODE_PRIVATE);        Gson gson = new Gson();        sharedPreferences.edit().putString("KEY_ORDER",gson.toJson(listCustomer)).commit();        Toast.makeText(getApplicationContext(),"Model Saved", Toast.LENGTH_LONG).show();    }    List<Menu> listMenuMakanan;    List<Menu> getDefaultPrefencesMenuMakanan(){        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("PREF_MENU_MAKANAN", Context.MODE_PRIVATE);        Type typeMenu = new TypeToken<List<Menu>>(){}.getType();        Gson gson = new Gson();        List<Menu> listMenuMakanan = gson.fromJson(sharedPreferences.getString("KEY_MENU_MAKANAN",""),typeMenu);        return listMenuMakanan;    }    void saveMenuMakan(List<Menu> menuMakananList){        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("PREF_MENU_MAKANAN", Context.MODE_PRIVATE);        SharedPreferences.Editor editor = sharedPreferences.edit();        Gson gson = new Gson();        String gsonMenuMakan = gson.toJson(menuMakananList);        editor.putString("KEY_MENU_MAKANAN",gsonMenuMakan).commit();    }    void saveMenuMinuman(List<Menu> menuMinumanList){        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("PREF_MENU_MINUMAN", Context.MODE_PRIVATE);        SharedPreferences.Editor editor = sharedPreferences.edit();        Gson gson = new Gson();        String gsonMenuMakan = gson.toJson(menuMinumanList);        editor.putString("KEY_MENU_MINUMAN",gsonMenuMakan).commit();    }    void saveMenuLauk(List<Menu> menuLaukList){        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("PREF_MENU_LAUK", Context.MODE_PRIVATE);        SharedPreferences.Editor editor = sharedPreferences.edit();        Gson gson = new Gson();        String gsonMenuMakan = gson.toJson(menuLaukList);        editor.putString("KEY_MENU_LAUK",gsonMenuMakan).commit();    }    List<Menu> getDefaultPrefencesMenuMinuman(){        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("PREF_MENU_MINUMAN", Context.MODE_PRIVATE);        Type typeMenu = new TypeToken<List<Menu>>(){}.getType();        Gson gson = new Gson();        List<Menu> listMenuMakanan = gson.fromJson(sharedPreferences.getString("KEY_MENU_MINUMAN",""),typeMenu);        return listMenuMakanan;    }    List<Menu> getDefaultPrefencesMenuLauk(){        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("PREF_MENU_LAUK", Context.MODE_PRIVATE);        Type typeMenu = new TypeToken<List<Menu>>(){}.getType();        Gson gson = new Gson();        List<Menu> listMenuMakanan = gson.fromJson(sharedPreferences.getString("KEY_MENU_LAUK",""),typeMenu);        return listMenuMakanan;    }    List<Menu>  getMenuMakanan(){        List<Menu> listMenuMakanan = getDefaultPrefencesMenuMakanan();        if(listMenuMakanan == null){            listMenuMakanan = new ArrayList<>();            listMenuMakanan.add(new Menu("Nasi Goreng",10000,10,false, R.drawable.makanan_4_nasigoreng));            listMenuMakanan.add(new Menu("Mie Goreng",10000,10,false,R.drawable.makanan_2_mie_goreng));            listMenuMakanan.add(new Menu("Mie Kuah",10000,10,false,R.drawable.makanan_3_mie_rebus));            listMenuMakanan.add(new Menu("Kweatiu Goreng ",10000,10,false,R.drawable.makanan_1_kwantiew));            listMenuMakanan.add(new Menu("Tambahkan Menu",0,0,false,R.drawable.ic_baseline_add_24));            saveMenuMakan(listMenuMakanan);        }        return listMenuMakanan;    }    List<Menu> getMenuMinuman(){        List<Menu> listMenuMinuman = getDefaultPrefencesMenuMinuman();        if(listMenuMinuman == null){            listMenuMinuman = new ArrayList<>();            listMenuMinuman.add(new Menu("Air Mineral",4000,10,false,R.drawable.minuman_1_air_pputih));            listMenuMinuman.add(new Menu("Es Teh",3000,10,false,R.drawable.minuman_2_es_teh));            listMenuMinuman.add(new Menu("Teh Hangat",3000,10,false,R.drawable.minuman_4_teh));            listMenuMinuman.add(new Menu("Es Jeruk",3000,10,false,R.drawable.minuman_3_es_jerul));            listMenuMinuman.add(new Menu("Jeruk Hangat",3000,10,false,R.drawable.minuman_3_es_jerul));            listMenuMinuman.add(new Menu("Tambahkan Menu",0,0,false,R.drawable.ic_baseline_add_24));            saveMenuMinuman(listMenuMinuman);        }        return listMenuMinuman;    }    List<Menu> getMenuLauk(){        List<Menu> listMenuLauk = getDefaultPrefencesMenuLauk();        if(listMenuLauk == null){            listMenuLauk = new ArrayList<>();            listMenuLauk.add(new Menu("Ikan Goreng",5000,10,false,R.drawable.lauk_2_ikan));            listMenuLauk.add(new Menu("Kangkung",3000,10,false,R.drawable.lauk_3_kangkung));            listMenuLauk.add(new Menu("Oseng Tempe",3000,10,false,R.drawable.lauk_4_oseng_tempe));            listMenuLauk.add(new Menu("Semur Sayur",4000,10,false,R.drawable.lauk_1_semur_sayur));            listMenuLauk.add(new Menu("Tambahkan Menu",0,0,false,R.drawable.ic_baseline_add_24));            saveMenuLauk(listMenuLauk);        }        return listMenuLauk;    }    List<Customer> getListValidCustomer(){        SharedPreferences sharedPreferences;        sharedPreferences = getApplicationContext().getSharedPreferences("ORDERAN_DITERIMA",Context.MODE_PRIVATE);        Gson gson = new Gson();        Type typeCustomer = new TypeToken<List<Customer>>(){}.getType();        List<Customer> listCust = gson.fromJson(sharedPreferences.getString("KEY_ORDER",""),typeCustomer);        return listCust;    }    void saveModelList(List<Customer> listCustomer){        SharedPreferences sharedPreferences;        sharedPreferences = getApplicationContext().getSharedPreferences("PREF_CUST", Context.MODE_PRIVATE);        Gson gson = new Gson();        sharedPreferences.edit().putString("MODEL_CUST_KEY",gson.toJson(listCustomer)).commit();        System.out.println("SAVE = " + gson.toJson(listCustomer));    }    List<Customer> getModelCustomer(){        SharedPreferences sharedPreferences;        sharedPreferences = getApplicationContext().getSharedPreferences("PREF_CUST",Context.MODE_PRIVATE);        Gson gson = new Gson();        Type typeCustomer = new TypeToken<List<Customer>>(){}.getType();        List<Customer> listCust = gson.fromJson(sharedPreferences.getString("MODEL_CUST_KEY",""),typeCustomer);        System.out.println("LOAD = " + sharedPreferences.getString("MODEL_CUST_KEY",""));        return listCust;    }    void sendMessageToFragmentAndFilter(String from , String message_text){        Intent intentData = new Intent("NOTIFICzATION_DATA");        intentData.putExtra("FROM",from);        intentData.putExtra("CHAT",message_text);        sendBroadcast(intentData);    }    @Override    public IBinder onBind(Intent intent) {        return super.onBind(intent);    }    @Override    public void onListenerConnected() {        super.onListenerConnected();        Toast.makeText(getApplicationContext(),"Notification Listener Conected !",Toast.LENGTH_SHORT).show();    }}
