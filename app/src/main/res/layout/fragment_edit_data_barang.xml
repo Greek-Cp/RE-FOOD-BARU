@@ -241,15 +241,16 @@
             android:layout_width="@dimen/_100sdp"
             android:layout_height="@dimen/_100sdp"
             android:id="@+id/id_img_tmep"
+            android:layout_marginTop="30dp"
             />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/id_tv_path_img"
             android:layout_gravity="center"
-            android:text="hallo"
+            android:text="path gambar"
             android:textStyle="bold"
-            android:textSize="@dimen/_20sdp"
+            android:textSize="@dimen/_10sdp"
             />
         <Button
             android:layout_width="match_parent"
@@ -271,6 +272,8 @@
             android:layout_marginTop="30dp"
             android:padding="20dp"
             android:id="@+id/id_btn_simpan_menu_perubahan"
+            android:layout_marginBottom="350dp"
+
             />
     </LinearLayout>
 

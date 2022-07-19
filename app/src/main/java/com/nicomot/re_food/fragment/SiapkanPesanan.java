@@ -1,5 +1,7 @@
 package com.nicomot.re_food.fragment;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,11 +12,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.nicomot.re_food.R;
 import com.nicomot.re_food.adapter.AdapterPesananCustomer;
 import com.nicomot.re_food.model.Customer;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,14 +72,53 @@ public class SiapkanPesanan extends Fragment {
 
     RecyclerView pesananRec;
     TextView tagihanTv;
+    Button btnKirimKeDapur;
+
+    List<Customer> listCust;
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         pesananRec = view.findViewById(R.id.id_rec_menu_makanan_inside_rec_list_pesanan);
         tagihanTv = view.findViewById(R.id.id_tv_tagihan);
+        btnKirimKeDapur = view.findViewById(R.id.id_btn_kirim_ke_dapur);
         AdapterPesananCustomer adapterPesananCustomer = new AdapterPesananCustomer(customer);
         pesananRec.setAdapter(adapterPesananCustomer);
         tagihanTv.setText(customer.getMessageTagihan());
+        listCust = getListValidCustomer();
+        if(listCust == null){
+            listCust = new ArrayList<>();
+        }
+
+        btnKirimKeDapur.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                customer.setStatusPesanan(false);
+                listCust.add(customer);
+                for(int i = 0; i < customer.getSemuaPesanan().size(); i++){
+                    System.out.println("Before kirim = " + customer.getSemuaPesanan().get(i).getJumlahPesanan());
+                }
+                saveListValidCustomer(listCust);
+                btnKirimKeDapur.setEnabled(false);
+                Toast.makeText(getActivity().getApplicationContext(),"Pesanan Dikirimkan Ke Dapur", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    void saveListValidCustomer(List<Customer> listCustomer){
+        SharedPreferences sharedPreferences;
+        sharedPreferences = getActivity().getSharedPreferences("OTW_SIAPKAN_DAPUR", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        System.out.println("Json Save Valid = " + gson.toJson(listCustomer));
+        sharedPreferences.edit().putString("KEY_DAPUR",gson.toJson(listCustomer)).commit();
+    }
+    List<Customer> getListValidCustomer(){
+        SharedPreferences sharedPreferences;
+        sharedPreferences = getActivity().getSharedPreferences("OTW_SIAPKAN_DAPUR",Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        Type typeCustomer = new TypeToken<List<Customer>>(){}.getType();
+        System.out.println("Json Load valid = " + sharedPreferences.getString("KEY_DAPUR",""));
+        List<Customer> listCust = gson.fromJson(sharedPreferences.getString("KEY_DAPUR",""),typeCustomer);
+        return listCust;
     }
 
     @Override

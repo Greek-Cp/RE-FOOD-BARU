@@ -58,8 +58,7 @@ public class AccountFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         btnEditBarang = view.findViewById(R.id.id_btn_edit_barang);
         btnPengaturan = view.findViewById(R.id.id_btn_pengaturan);
-        btnMetodePembayaran = view.findViewById(R.id.id_btn_metode_pembayaran);
-        btnLogout = view.findViewById(R.id.id_btn_log_out);
+
         btnEditBarang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

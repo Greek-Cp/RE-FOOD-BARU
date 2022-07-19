@@ -9,12 +9,12 @@
     <item
         android:icon="@drawable/ic_baseline_notifications_24"
         android:id="@+id/id_nav_pesanan"
-        android:title="Pesanan Masuk"
+        android:title="Pesanan Siap"
         />
     <item
-        android:icon="@drawable/ic_baseline_account_circle_24"
+        android:icon="@drawable/parcel"
         android:id="@+id/id_nav_account"
-        android:title="Akun Saya"
+        android:title="Pengaturan Menu"
         />
 
 </menu>

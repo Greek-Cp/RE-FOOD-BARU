@@ -10,8 +10,17 @@ public class Customer {
     private List<Pesanan> pesananSnack;
     private List<Pesanan> semuaPesanan;
     private int totalPesanan;
-
+    boolean statusPesanan;
     private String messageTagihan;
+
+    public boolean isStatusPesanan() {
+        return statusPesanan;
+    }
+
+    public void setStatusPesanan(boolean statusPesanan) {
+        this.statusPesanan = statusPesanan;
+    }
+
     public List<Pesanan> getSemuaPesanan() {
         return semuaPesanan;
     }

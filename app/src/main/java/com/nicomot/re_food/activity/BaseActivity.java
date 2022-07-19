@@ -17,12 +17,12 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.nicomot.re_food.R;
 import com.nicomot.re_food.fragment.AccountFragment;
+import com.nicomot.re_food.fragment.FragmentDapur;
 import com.nicomot.re_food.fragment.HomeFragment;
 import com.nicomot.re_food.fragment.OrderListFragment;
 import com.nicomot.re_food.service.ServiceNotificationListener;
@@ -73,18 +73,13 @@ public class BaseActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == 1){
             if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(getApplicationContext(),"Write External Storage Granted",Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(getApplicationContext(), "Write External Storage Denied ", Toast.LENGTH_LONG).show();
             }
             if(grantResults[1] == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText( getApplicationContext(), "Read External Storage Granted",Toast.LENGTH_LONG).show();
 
             } else{
-                Toast.makeText(getApplicationContext(),"Read External Storage Denied",Toast.LENGTH_LONG).show();
             }
             if(grantResults[2] == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText( getApplicationContext(), "Read External Storage Granted",Toast.LENGTH_LONG).show();
             }
 
         }
@@ -111,8 +106,15 @@ public class BaseActivity extends AppCompatActivity {
     void initializeID(){
         bottomNavigationView = this.findViewById(R.id.id_navigation_view);
         frameLayout = this.findViewById(R.id.id_base_frame);
+        Intent intent = getIntent();
+        String kerja = intent.getStringExtra("KERJA");
+        if(kerja.equals("DAPUR")){
+            FragmentDapur fragmentDapur = new FragmentDapur();
+            getSupportFragmentManager().beginTransaction().replace(frameLayout.getId(),fragmentDapur).commit();
+        }
     }
     void navBarItemListener(BottomNavigationView bottomNavigationView){
+        switchFragment(getSupportFragmentManager(),new HomeFragment());
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

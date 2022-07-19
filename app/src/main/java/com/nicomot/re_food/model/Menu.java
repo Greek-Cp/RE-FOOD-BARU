@@ -1,6 +1,7 @@
 package com.nicomot.re_food.model;
 
-public class Menu {
+public class
+Menu {
     String namaItem;
     int hargaItem;
     int stockItem;

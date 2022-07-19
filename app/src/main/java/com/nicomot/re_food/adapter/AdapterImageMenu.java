@@ -32,6 +32,7 @@ public class AdapterImageMenu extends RecyclerView.Adapter<AdapterImageMenu.View
     @Override
     public void onBindViewHolder(@NonNull AdapterImageMenu.ViewHolder holder, int position) {
         holder.tv_Nama_Menu.setText(listPesanan.get(position).getNamaPesanan());
+        System.out.println(listPesanan.get(position).getJumlahPesanan() + " PESANAN COY");
         holder.tv_Jumlah_Pesanan.setText(String.valueOf(listPesanan.get(position).getJumlahPesanan()) + " Porsi");
         switch (listPesanan.get(position).getNamaPesanan()){
             case "Nasi Goreng":

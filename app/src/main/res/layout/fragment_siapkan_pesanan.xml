@@ -8,7 +8,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingBottom="120dp"
+        >
     <ImageView
         android:id="@+id/id_img_logo_home"
         android:layout_width="wrap_content"
@@ -96,7 +98,19 @@
 
                 android:layout_marginLeft="30dp"
                 />
-
+            
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kirim Ke Dapur"
+                android:textAllCaps="false"
+                app:layout_constraintTop_toBottomOf="@id/id_tv_tagihan"
+                android:layout_marginLeft="30dp"
+                android:padding="20dp"
+                android:id="@+id/id_btn_kirim_ke_dapur"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="50dp"
+                />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>

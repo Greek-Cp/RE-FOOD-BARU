@@ -10,21 +10,27 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nicomot.re_food.R;
+import com.nicomot.re_food.adapter.AdapterDapur;
+import com.nicomot.re_food.adapter.AdapterPesananSudahSiap;
 import com.nicomot.re_food.model.Customer;
+import com.nicomot.re_food.model.Pesanan;
 import com.nicomot.re_food.util.ShowMessage;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -65,6 +71,10 @@ public class OrderListFragment extends Fragment {
         return fragment;
     }
 
+    RecyclerView recListPesananCustomer;
+    AdapterPesananSudahSiap adapterDapur;
+    AdapterPesananSudahSiap.clickPesanan listenerClickPesanan;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,29 +83,90 @@ public class OrderListFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
+    List<Pesanan> removeDuplicatePesanan(List<Pesanan> listMakanan){
+        Pesanan[] names = new Pesanan[listMakanan.size()];
+        for(int i = 0; i < listMakanan.size(); i++){
+            names[i] = listMakanan.get(i);
+        }
 
-    ReceiveBroadcastReceiver receiveBroadcastReceiver;
+        HashMap<String, Integer> repeatNames = new HashMap<String, Integer>();
+        List<Pesanan> pesananNew = new ArrayList<>();
+        int repeatCount = 0;
+        for (int i = 0; i < names.length; i++) {
+            int count = 0;
+            for (int k = 0; k < names.length; k++) {
+                if (names[i].getNamaPesanan().equals( names[k].getNamaPesanan())) {
+                    count++;
+                }
+            }
+            if (count >= 1) {
+                if (!repeatNames.containsKey(names[i].getNamaPesanan())) {
+                    System.out.println(names[i].getNamaPesanan() + ":" + count + " wasu");
+                    pesananNew.add(new Pesanan(names[i].getNamaPesanan(),count,names[i].getHargaPesanan()));
+                    repeatNames.put(names[i].getNamaPesanan(), count);
+                    repeatCount += count;
+                }
+            }
+        }
+        for(int i = 0; i < pesananNew.size(); i++){
+            System.out.printf("%s = %d %n" ,pesananNew.get(i).getNamaPesanan(),pesananNew.get(i).getJumlahPesanan() * pesananNew.get(i).getHargaPesanan());
+        }
+        System.out.println("Total Count:" + repeatCount);
+        return pesananNew;
+    }
+    void hiddenActionBar(){
+    }
+    void saveListValidCustomer(List<Customer> listCustomer){
+        SharedPreferences sharedPreferences;
+        sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("OTW_SIAPKAN_DAPUR", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        System.out.println("Json Save Valid = " + gson.toJson(listCustomer));
+        sharedPreferences.edit().putString("KEY_DAPUR",gson.toJson(listCustomer)).commit();
+    }
+
+    List<Customer> getListValidCustomer(){
+        SharedPreferences sharedPreferences;
+        sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("OTW_SIAPKAN_DAPUR",Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        Type typeCustomer = new TypeToken<List<Customer>>(){}.getType();
+        System.out.println("Json Load valid = " + sharedPreferences.getString("KEY_DAPUR",""));
+        List<Customer> listCust = gson.fromJson(sharedPreferences.getString("KEY_DAPUR",""),typeCustomer);
+        return listCust;
+    }
+    void setAdapterListPesanan() {
+        List<Customer> listCustomerValid = getListValidCustomer();
+        if (listCustomerValid != null) {
+            List<Customer> validCustomer = new ArrayList<>();
+            for (Customer customerValid : listCustomerValid) {
+                if(customerValid.isStatusPesanan() == true){
+                    List<Pesanan> listPesanan = customerValid.getSemuaPesanan();
+                    customerValid.setSemuaPesanan(listPesanan);
+                    validCustomer.add(customerValid);
+
+                }
+            }
+            listenerClickPesanan = new AdapterPesananSudahSiap.clickPesanan() {
+                @Override
+                public void clickPesanan(int pesanan) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Pesanan ke - " + pesanan + " dipilih", Toast.LENGTH_SHORT).show();
+                }
+                @Override
+                public void clickRadio(int positions, boolean status) {
+                    Toast.makeText(getActivity().getApplicationContext(), "posisi radio ke -> " + positions, Toast.LENGTH_SHORT).show();
+                    validCustomer.get(positions).setStatusPesanan(status);
+                    saveListValidCustomer(validCustomer);
+                }
+            };
+            adapterDapur = new AdapterPesananSudahSiap(validCustomer, listenerClickPesanan);
+            recListPesananCustomer.setAdapter(adapterDapur);
+        }
+    }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        receiveBroadcastReceiver = new ReceiveBroadcastReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("NOTIFICATION_DATA");
-        getActivity().registerReceiver(receiveBroadcastReceiver,intentFilter);
-
+        recListPesananCustomer = view.findViewById(R.id.id_rec_list_pesanan_cust);
+        setAdapterListPesanan();
     }
-
-    public class ReceiveBroadcastReceiver extends BroadcastReceiver {
-        List<Customer> listCustomer;
-        List<String> chat;
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-
-        }
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

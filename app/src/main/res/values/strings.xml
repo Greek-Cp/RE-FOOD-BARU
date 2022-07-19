@@ -7,8 +7,12 @@
         <item>Menu Makanan</item>
         <item>Menu Minuman</item>
         <item>Menu Lauk</item>
-
     </string-array>
 
+
+    <string-array name="list_role">
+        <item>KASIR</item>
+        <item>DAPUR</item>
+    </string-array>
 
 </resources>

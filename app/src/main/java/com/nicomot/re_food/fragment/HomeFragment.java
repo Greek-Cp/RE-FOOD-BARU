@@ -137,7 +137,6 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void clickPesanan(int pesanan) {
                     Toast.makeText(getActivity().getApplicationContext(), "Pesanan ke - " + pesanan + " dipilih", Toast.LENGTH_SHORT).show();
-
                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.id_base_frame,new SiapkanPesanan(listCustomerValid.get(pesanan))).commit();
                 }
             };
