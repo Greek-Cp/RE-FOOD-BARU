@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "472991476679",
+    "project_id": "re-food-7fc1b",
+    "storage_bucket": "re-food-7fc1b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:472991476679:android:b363a967452437b4e9c7e2",
+        "android_client_info": {
+          "package_name": "com.nicomot.re_food"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "472991476679-toc5184edjn0qk4u005tt7qnug4jr3i0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6Wsx5WuqYXWWKiA2DjszPY7AUjMkldsk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "472991476679-toc5184edjn0qk4u005tt7qnug4jr3i0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
