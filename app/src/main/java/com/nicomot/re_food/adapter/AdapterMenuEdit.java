@@ -8,10 +8,12 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nicomot.re_food.R;
@@ -29,7 +31,6 @@ public class AdapterMenuEdit extends RecyclerView.Adapter<AdapterMenuEdit.ViewHo
 
     List<Menu> listMenuToko;
     AdapterMenuEdit.clickMakananItem clickMakananItem;
-
     Context context;
     public AdapterMenuEdit(List<Menu> listMenuToko, AdapterMenuEdit.clickMakananItem clickMakananItem
     , Context context) {
@@ -40,6 +41,8 @@ public class AdapterMenuEdit extends RecyclerView.Adapter<AdapterMenuEdit.ViewHo
 
     public interface clickMakananItem{
         void clickItemListener(int position);
+        void deleteItemListener(int positionOfItem);
+
     }
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -53,11 +56,18 @@ public class AdapterMenuEdit extends RecyclerView.Adapter<AdapterMenuEdit.ViewHo
         holder.namaPesanan.setText(listMenuToko.get(position).getNamaItem());
         holder.imageViewPesanan.setImageResource(listMenuToko.get(position).getGambarDrawable());
         if(listMenuToko.get(position).getPathGambarItem() != null){
-
                 Bitmap bitmap = BitmapFactory.decodeFile(listMenuToko.get(position).getPathGambarItem());
                 holder.imageViewPesanan.setImageBitmap(bitmap);
-
         }
+        if(position == listMenuToko.size() - 1){
+            holder.btnDelete.setVisibility(View.INVISIBLE);
+        }
+        holder.btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clickMakananItem.deleteItemListener(holder.getAdapterPosition());
+            }
+        });
     }
 
     static String convertRupiah(int num){
@@ -77,10 +87,13 @@ public class AdapterMenuEdit extends RecyclerView.Adapter<AdapterMenuEdit.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener{
         TextView tvContent , namaPesanan;
         ImageView imageViewPesanan;
+        CardView btnDelete;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageViewPesanan = itemView.findViewById(R.id.img_id_menu_tersedia_adapter);
             namaPesanan = itemView.findViewById(R.id.tv_id_nama_menu_tersedia_makanan_adapter);
+            btnDelete = itemView.findViewById(R.id.id_card_btn_delete_menu);
             itemView.setOnClickListener(this::onClick);
         }
 

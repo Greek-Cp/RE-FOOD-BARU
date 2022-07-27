@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.nicomot.re_food.R;
 import com.nicomot.re_food.model.Customer;
+import com.nicomot.re_food.model.Menu;
 import com.nicomot.re_food.model.Pesanan;
 
 import java.text.DecimalFormat;
@@ -28,9 +29,12 @@ public class AdapterPesanan extends RecyclerView.Adapter<AdapterPesanan.ViewHold
     List<Customer> listPesanan;
     AdapterPesanan.clickPesanan listenerClick;
 
-    public AdapterPesanan(List<Customer> listPesanan, clickPesanan listenerClick) {
+    List<Menu> menuAvailable;
+
+    public AdapterPesanan(List<Customer> listPesanan, clickPesanan listenerClick,List<Menu> menu) {
         this.listPesanan = listPesanan;
         this.listenerClick = listenerClick;
+        this.menuAvailable = menu;
     }
 
     @Override
@@ -44,7 +48,7 @@ public class AdapterPesanan extends RecyclerView.Adapter<AdapterPesanan.ViewHold
         holder.tv_Id_Pesan.setText("#"+position);
         holder.tv_Nama_Pemesan.setText(listPesanan.get(position).getDataDiri().getNamaPemesan());
         holder.tv_Alamat_Pemesan.setText(listPesanan.get(position).getDataDiri().getAlamat());
-        AdapterImageMenu adapterImageMenu = new AdapterImageMenu(listPesanan.get(position).getSemuaPesanan());
+        AdapterImageMenu adapterImageMenu = new AdapterImageMenu(listPesanan.get(position).getSemuaPesanan(),menuAvailable);
         holder.recyclerViewMenuMakan.setAdapter(adapterImageMenu);
         Random rnd = new Random();
         int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
@@ -59,8 +63,7 @@ public class AdapterPesanan extends RecyclerView.Adapter<AdapterPesanan.ViewHold
         formatRp.setMonetaryDecimalSeparator(',');
         formatRp.setGroupingSeparator('.');
         kursIndonesia.setDecimalFormatSymbols(formatRp);
-        return kursIndonesia.format(num).substring(0,kursIndonesia.format(num).length() - 3)
-                ;
+        return kursIndonesia.format(num);
 
     }
     @Override

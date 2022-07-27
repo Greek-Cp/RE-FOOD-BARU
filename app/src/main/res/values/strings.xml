@@ -14,5 +14,18 @@
         <item>KASIR</item>
         <item>DAPUR</item>
     </string-array>
+    <string name="service_name">Incoming Message Notification Listener</string>
+    <string name="mainAutoReplyTextPlaceholder">(Custom Reply)</string>
+    <string name="auto_reply_default_message">Auto Reply\n⚠️ User not available</string>
+    <string name="mainAutoReplyLabel">Auto reply text</string>
+    <string name="mainAutoReplySwitchOffLabel">Auto reply OFF</string>
+    <string name="mainAutoReplySwitchOnLabel">Auto reply ON</string>
+    <string name="mainAutoReplyEditBtnTooltip">Click to edit auto reply text</string>
+    <string name="to_help_you_leave_whatsapp">Auto reply to help you leave WhatsApp and Facebook messenger</string>
+    <string name="decline">Decline</string>
+    <string name="accept">Accept</string>
+    <string name="sure">I\'m Sure</string>
+    <string name="retry">Retry</string>
+    <string name="sent_using_Watomatic">Sent using watomatic.app</string>
 
 </resources>

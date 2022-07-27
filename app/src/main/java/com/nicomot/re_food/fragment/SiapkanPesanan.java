@@ -16,10 +16,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nicomot.re_food.R;
 import com.nicomot.re_food.adapter.AdapterPesananCustomer;
+import com.nicomot.re_food.model.Account;
 import com.nicomot.re_food.model.Customer;
 
 import java.lang.reflect.Type;
@@ -88,7 +91,6 @@ public class SiapkanPesanan extends Fragment {
         if(listCust == null){
             listCust = new ArrayList<>();
         }
-
         btnKirimKeDapur.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,7 +101,9 @@ public class SiapkanPesanan extends Fragment {
                 }
                 saveListValidCustomer(listCust);
                 btnKirimKeDapur.setEnabled(false);
+                insertDataPesananKeDatabase(customer);
                 Toast.makeText(getActivity().getApplicationContext(),"Pesanan Dikirimkan Ke Dapur", Toast.LENGTH_SHORT).show();
+
             }
         });
     }
@@ -110,6 +114,13 @@ public class SiapkanPesanan extends Fragment {
         Gson gson = new Gson();
         System.out.println("Json Save Valid = " + gson.toJson(listCustomer));
         sharedPreferences.edit().putString("KEY_DAPUR",gson.toJson(listCustomer)).commit();
+    }
+
+    void insertDataPesananKeDatabase(Customer customer){
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://re-food-7fc1b-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        DatabaseReference myRef = database.getReference("Customer").child(customer.getName());
+        System.out.println(" teest = " + myRef.getKey());
+        myRef.setValue(customer);
     }
     List<Customer> getListValidCustomer(){
         SharedPreferences sharedPreferences;

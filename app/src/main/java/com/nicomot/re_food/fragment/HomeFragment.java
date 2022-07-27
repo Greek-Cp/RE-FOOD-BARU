@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -19,6 +20,7 @@ import com.google.gson.reflect.TypeToken;
 import com.nicomot.re_food.R;
 import com.nicomot.re_food.adapter.AdapterPesanan;
 import com.nicomot.re_food.model.Customer;
+import com.nicomot.re_food.model.Menu;
 import com.nicomot.re_food.model.Pesanan;
 
 import java.lang.reflect.Type;
@@ -68,7 +70,6 @@ public class HomeFragment extends Fragment {
         SharedPreferences sharedPreferences;
         sharedPreferences = getActivity().getSharedPreferences("ORDERAN_DITERIMA", Context.MODE_PRIVATE);
         Gson gson = new Gson();
-        System.out.println("Json Save Valid = " + gson.toJson(listCustomer));
         sharedPreferences.edit().putString("KEY_ORDER",gson.toJson(listCustomer)).commit();
         Toast.makeText(getActivity().getApplicationContext(),"Model Saved", Toast.LENGTH_LONG).show();
     }
@@ -77,17 +78,28 @@ public class HomeFragment extends Fragment {
         sharedPreferences = getActivity().getSharedPreferences("ORDERAN_DITERIMA",Context.MODE_PRIVATE);
         Gson gson = new Gson();
         Type typeCustomer = new TypeToken<List<Customer>>(){}.getType();
-        System.out.println("Json Load valid = " + sharedPreferences.getString("KEY_ORDER",""));
         List<Customer> listCust = gson.fromJson(sharedPreferences.getString("KEY_ORDER",""),typeCustomer);
         return listCust;
+    }
+    String getLogModelCustomer(String calledFrom){
+        SharedPreferences sharedPreferences;
+        sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("PREF_CUST",Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        Type typeCustomer = new TypeToken<List<Customer>>(){}.getType();
+        String r = sharedPreferences.getString("MODEL_CUST_KEY","");
+        System.out.println( calledFrom +  "LOAD = " + r);
+        return r;
     }
     RecyclerView recListPesananCustomer;
     AdapterPesanan adapterPesanan;
     AdapterPesanan.clickPesanan listenerClickPesanan;
+    EditText debugLog;
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         recListPesananCustomer = view.findViewById(R.id.id_rec_list_pesanan_cust);
+        debugLog = view.findViewById(R.id.id_search_test);
+        debugLog.setText(getLogModelCustomer("From Home Fragment"));
         setAdapterListPesanan();
     }
 
@@ -109,7 +121,6 @@ public class HomeFragment extends Fragment {
             }
             if (count >= 1) {
                 if (!repeatNames.containsKey(names[i].getNamaPesanan())) {
-                    System.out.println(names[i].getNamaPesanan() + ":" + count + " wasu");
                     pesananNew.add(new Pesanan(names[i].getNamaPesanan(),count,names[i].getHargaPesanan()));
                     repeatNames.put(names[i].getNamaPesanan(), count);
                     repeatCount += count;
@@ -117,9 +128,7 @@ public class HomeFragment extends Fragment {
             }
         }
         for(int i = 0; i < pesananNew.size(); i++){
-            System.out.printf("%s = %d %n" ,pesananNew.get(i).getNamaPesanan(),pesananNew.get(i).getJumlahPesanan() * pesananNew.get(i).getHargaPesanan());
         }
-        System.out.println("Total Count:" + repeatCount);
         return pesananNew;
     }
 
@@ -141,10 +150,66 @@ public class HomeFragment extends Fragment {
                 }
             };
 
-            adapterPesanan = new AdapterPesanan(validCustomer,listenerClickPesanan);
+            List<Menu> menuMakanan = getMenuMakanan();
+            List<Menu> menuMinuman = getMenuMinuman();
+            List<Menu> menuLauk = getMenuLauk();
+            List<Menu> listMenu = new ArrayList<>();
+            if(menuMakanan != null){
+                for(Menu mMakanan : menuMakanan){
+                    listMenu.add(mMakanan);
+                }
+            }
+            if(menuMinuman != null){
+                for(Menu mMinuman : menuMinuman){
+                    listMenu.add(mMinuman);
+                }
+            }
+            if(menuLauk != null){
+                for(Menu mLauk : menuLauk){
+                    listMenu.add(mLauk);
+                }
+            }
+            adapterPesanan = new AdapterPesanan(validCustomer,listenerClickPesanan,listMenu);
             recListPesananCustomer.setAdapter(adapterPesanan);
         }
 
+    }
+    List<Menu> getDefaultPrefencesMenuMakanan(){
+        SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("PREF_MENU_MAKANAN", Context.MODE_PRIVATE);
+        Type typeMenu = new TypeToken<List<Menu>>(){}.getType();
+        Gson gson = new Gson();
+        List<Menu> listMenuMakanan = gson.fromJson(sharedPreferences.getString("KEY_MENU_MAKANAN",""),typeMenu);
+        return listMenuMakanan;
+    }
+    List<Menu> getDefaultPrefencesMenuMinuman(){
+        SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("PREF_MENU_MINUMAN", Context.MODE_PRIVATE);
+        Type typeMenu = new TypeToken<List<Menu>>(){}.getType();
+        Gson gson = new Gson();
+        List<Menu> listMenuMakanan = gson.fromJson(sharedPreferences.getString("KEY_MENU_MINUMAN",""),typeMenu);
+        return listMenuMakanan;
+    }
+    List<Menu> getDefaultPrefencesMenuLauk(){
+        SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("PREF_MENU_LAUK", Context.MODE_PRIVATE);
+        Type typeMenu = new TypeToken<List<Menu>>(){}.getType();
+        Gson gson = new Gson();
+        List<Menu> listMenuMakanan = gson.fromJson(sharedPreferences.getString("KEY_MENU_LAUK",""),typeMenu);
+        return listMenuMakanan;
+    }
+    List<Menu>  getMenuMakanan(){
+        List<Menu> listMenuMakanan = getDefaultPrefencesMenuMakanan();
+
+        return listMenuMakanan;
+    }
+
+    List<Menu> getMenuMinuman(){
+        List<Menu> listMenuMinuman = getDefaultPrefencesMenuMinuman();
+
+        return listMenuMinuman;
+    }
+    List<Menu> getMenuLauk(){
+        List<Menu> listMenuLauk = getDefaultPrefencesMenuLauk();
+
+        return listMenuLauk;
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {

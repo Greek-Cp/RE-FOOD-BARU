@@ -38,7 +38,7 @@ import com.nicomot.re_food.models.NotificationIds;
 
 public class NotificationUtils {
 
-    private static final String[] REPLY_KEYWORDS = {"reply", "android.intent.extra.text"};
+    private static final String[] REPLY_KEYWORDS = {"reply", "android.intent.extra.text","Balas","balas","Reply"};
     private static final CharSequence REPLY_KEYWORD = "reply";
     private static final CharSequence INPUT_KEYWORD = "input";
 
@@ -243,7 +243,7 @@ public class NotificationUtils {
         if(action == null)
             action = getWearReplyAction(n);
         if(action == null)
-            return null;
+            action = getQuickReplyAction(n);
         return new Action(action, packageName, true);
     }
 

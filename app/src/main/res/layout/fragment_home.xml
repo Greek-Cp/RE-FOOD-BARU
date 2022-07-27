@@ -16,34 +16,18 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="20dp"
         android:src="@drawable/re_food"
-        app:layout_constraintBottom_toBottomOf="@+id/id_text_input_layout_search_home_fragment"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/id_text_input_layout_search_home_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        app:boxCornerRadiusBottomEnd="30dp"
-        app:boxCornerRadiusBottomStart="30dp"
-        app:boxCornerRadiusTopEnd="30dp"
-        app:boxCornerRadiusTopStart="30dp"
-        android:layout_marginTop="10dp"
-
-        android:layout_marginLeft="90dp"
-        android:layout_marginRight="10dp"
-        app:hintTextColor="@color/white"
-        android:hint=" cari"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/id_img_logo_home"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-        app:startIconDrawable="@drawable/ic_baseline_search_24">
-        <com.google.android.material.textfield.TextInputEditText
+        <EditText
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="wrap_content"
+            android:id="@+id/id_search_test"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/id_img_logo_home"
+            app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="100dp"
+            />
 
     <TextView
         android:layout_width="wrap_content"
@@ -56,7 +40,6 @@
         android:layout_marginLeft="10dp"
         android:id="@+id/id_tv_list_notes"
         android:textColor="?text_color"
-
         />
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
@@ -65,7 +48,7 @@
         android:orientation="vertical"
         tools:listitem="@layout/card_order_pesanan"
         app:layout_constraintTop_toBottomOf="@id/id_tv_list_notes"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="330dp"
         android:id="@+id/id_rec_list_pesanan_cust"
         android:layout_marginBottom="30dp"
         android:paddingBottom="150dp"

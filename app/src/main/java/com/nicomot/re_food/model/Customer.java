@@ -13,6 +13,9 @@ public class Customer {
     boolean statusPesanan;
     private String messageTagihan;
 
+    public Customer(){
+
+    }
     public boolean isStatusPesanan() {
         return statusPesanan;
     }

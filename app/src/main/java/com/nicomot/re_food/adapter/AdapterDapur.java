@@ -68,11 +68,14 @@ public class AdapterDapur extends RecyclerView.Adapter<AdapterDapur.ViewHolder> 
                     holder.radioButtonSiap.setChecked(true);
                     holder.radioButtonSiap.setSelected(true);
                     listenerClick.clickRadio(position,true);
+                    notifyDataSetChanged();
 
                 } else{
                     holder.radioButtonSiap.setChecked(false);
                     holder.radioButtonSiap.setSelected(false);
                     listenerClick.clickRadio(position,false);
+                    notifyDataSetChanged();
+
                 }
             }
         });

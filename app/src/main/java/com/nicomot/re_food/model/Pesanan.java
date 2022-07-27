@@ -10,6 +10,9 @@ public class Pesanan {
         this.jumlahPesanan = jumlahPesanan;
         this.hargaPesanan = hargaPesanan;
     }
+    public Pesanan(){
+
+    }
     public int getHargaPesanan() {
         return hargaPesanan;
     }

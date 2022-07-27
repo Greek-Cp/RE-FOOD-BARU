@@ -1,5 +1,7 @@
 package com.nicomot.re_food.activity;
 
+import static android.service.notification.NotificationListenerService.requestRebind;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -13,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -49,6 +52,7 @@ public class BaseActivity extends AppCompatActivity {
                 Manifest.permission.READ_SMS,
                 Manifest.permission.RECEIVE_SMS
         };
+
         if(!grantPermision(BaseActivity.this,PERMISION)){
             ActivityCompat.requestPermissions(BaseActivity.this,PERMISION,1);
         }
@@ -58,14 +62,40 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    public void tryReconnectService() {
+        toggleNotificationListenerService();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            ComponentName componentName =
+                    new ComponentName(getApplicationContext(), ServiceNotificationListener.class);
+
+            //It say to Notification Manager RE-BIND your service to listen notifications again inmediatelly!
+            requestRebind(componentName);
+        }
+    }
+
+
+    private void toggleNotificationListenerService() {
+        PackageManager pm = getPackageManager();
+        pm.setComponentEnabledSetting(new ComponentName(this, ServiceNotificationListener.class),
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+        pm.setComponentEnabledSetting(new ComponentName(this, ServiceNotificationListener.class),
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+    }
     SharedPreferences sharedPreferences;
     public Boolean VerifyNotificationPermission() {
         String theList = android.provider.Settings.Secure.getString(getContentResolver(), "enabled_notification_listeners");
-        String[] theListList = theList.split(":");
-        String me = (new ComponentName(this, ServiceNotificationListener.class)).flattenToString();
-        for ( String next : theListList ) {
-            if ( me.equals(next) ) return true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Intent intent=new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+            startActivity(intent);
+        } else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.R){
+            System.out.println(theList);
+            String[] theListList = theList.split(":");
+            String me = (new ComponentName(this, ServiceNotificationListener.class)).flattenToString();
+            for ( String next : theListList ) {
+                if ( me.equals(next) ) return true;
+            }
         }
+
         return false;
     }
     @Override
@@ -107,11 +137,15 @@ public class BaseActivity extends AppCompatActivity {
         bottomNavigationView = this.findViewById(R.id.id_navigation_view);
         frameLayout = this.findViewById(R.id.id_base_frame);
         Intent intent = getIntent();
+      /*
         String kerja = intent.getStringExtra("KERJA");
+
         if(kerja.equals("DAPUR")){
             FragmentDapur fragmentDapur = new FragmentDapur();
             getSupportFragmentManager().beginTransaction().replace(frameLayout.getId(),fragmentDapur).commit();
         }
+      */
+
     }
     void navBarItemListener(BottomNavigationView bottomNavigationView){
         switchFragment(getSupportFragmentManager(),new HomeFragment());
@@ -120,6 +154,7 @@ public class BaseActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.id_nav_home:
+                        tryReconnectService();
                         switchFragment(getSupportFragmentManager(),new HomeFragment());
                         break;
                     case R.id.id_nav_pesanan:

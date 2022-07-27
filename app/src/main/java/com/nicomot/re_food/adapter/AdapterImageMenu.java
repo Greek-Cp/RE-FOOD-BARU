@@ -1,5 +1,9 @@
 package com.nicomot.re_food.adapter;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,30 +14,89 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.nicomot.re_food.R;
 import com.nicomot.re_food.model.Customer;
+import com.nicomot.re_food.model.Menu;
 import com.nicomot.re_food.model.Pesanan;
 import com.nicomot.re_food.util.MenuUtil;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdapterImageMenu extends RecyclerView.Adapter<AdapterImageMenu.ViewHolder> {
     List<Pesanan> listPesanan;
-    public AdapterImageMenu(List<Pesanan> listPesanan) {
+    List<Menu> listMenu;
+    Context context;
+
+    public AdapterImageMenu(List<Pesanan> listPesanan,List<Menu> listMenu) {
         this.listPesanan = listPesanan;
+        this.listMenu = listMenu;
+
     }
+
 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_layout_img_pesanan,parent,false);
         return new ViewHolder(v);
     }
+    List<Menu> getDefaultPrefencesMenuMakanan(){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("PREF_MENU_MAKANAN", Context.MODE_PRIVATE);
+        Type typeMenu = new TypeToken<List<Menu>>(){}.getType();
+        Gson gson = new Gson();
+        List<Menu> listMenuMakanan = gson.fromJson(sharedPreferences.getString("KEY_MENU_MAKANAN",""),typeMenu);
+        return listMenuMakanan;
+    }
+    List<Menu> getDefaultPrefencesMenuMinuman(){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("PREF_MENU_MINUMAN", Context.MODE_PRIVATE);
+        Type typeMenu = new TypeToken<List<Menu>>(){}.getType();
+        Gson gson = new Gson();
+        List<Menu> listMenuMakanan = gson.fromJson(sharedPreferences.getString("KEY_MENU_MINUMAN",""),typeMenu);
+        return listMenuMakanan;
+    }
+    List<Menu> getDefaultPrefencesMenuLauk(){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("PREF_MENU_LAUK", Context.MODE_PRIVATE);
+        Type typeMenu = new TypeToken<List<Menu>>(){}.getType();
+        Gson gson = new Gson();
+        List<Menu> listMenuMakanan = gson.fromJson(sharedPreferences.getString("KEY_MENU_LAUK",""),typeMenu);
+        return listMenuMakanan;
+    }
 
+    List<Menu>  getMenuMakanan(){
+        List<Menu> listMenuMakanan = getDefaultPrefencesMenuMakanan();
+
+        return listMenuMakanan;
+    }
+
+    List<Menu> getMenuMinuman(){
+        List<Menu> listMenuMinuman = getDefaultPrefencesMenuMinuman();
+
+        return listMenuMinuman;
+    }
+    List<Menu> getMenuLauk(){
+        List<Menu> listMenuLauk = getDefaultPrefencesMenuLauk();
+
+        return listMenuLauk;
+    }
     @Override
     public void onBindViewHolder(@NonNull AdapterImageMenu.ViewHolder holder, int position) {
         holder.tv_Nama_Menu.setText(listPesanan.get(position).getNamaPesanan());
         System.out.println(listPesanan.get(position).getJumlahPesanan() + " PESANAN COY");
         holder.tv_Jumlah_Pesanan.setText(String.valueOf(listPesanan.get(position).getJumlahPesanan()) + " Porsi");
+        for(Menu menu : listMenu){
+            if(listPesanan.get(position).getNamaPesanan().equals(menu.getNamaItem())){
+                if(menu.getPathGambarItem() != null){
+                    Bitmap bitmap = BitmapFactory.decodeFile(menu.getPathGambarItem());
+                    holder.img_Menu.setImageBitmap(bitmap);
+                }
+            }
+        }
+
+
+
         switch (listPesanan.get(position).getNamaPesanan()){
             case "Nasi Goreng":
                 holder.img_Menu.setImageResource(R.drawable.makanan_4_nasigoreng);

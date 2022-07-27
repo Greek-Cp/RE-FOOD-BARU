@@ -5,6 +5,9 @@ public class DataDiri {
     String alamat;
     String nomerHp;
 
+    public DataDiri(){
+
+    }
     public DataDiri(String namaPemesan, String alamat, String nomerHp) {
         this.namaPemesan = namaPemesan;
         this.alamat = alamat;

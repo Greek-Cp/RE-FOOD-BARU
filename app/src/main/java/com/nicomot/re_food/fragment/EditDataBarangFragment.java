@@ -105,8 +105,8 @@ public class EditDataBarangFragment extends Fragment {
 
                 try {
                     InputStream ios = getActivity().getApplicationContext().getContentResolver().openInputStream(result);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         OutputStream fosQ;
+                        FileOutputStream fileOutputStream;
                         ContentResolver resolver = getActivity().getApplicationContext().getContentResolver();
                         Bitmap bmp = BitmapFactory.decodeStream(ios);
                         ContentValues contentValues = new ContentValues();
@@ -115,17 +115,20 @@ public class EditDataBarangFragment extends Fragment {
                         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/png");
                         contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, "DCIM/" + "REFOOD_RES/" );
                         Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-                        fosQ = resolver.openOutputStream(imageUri);
-                        System.out.println(imageUri.getPath());
-                        bmp.compress(Bitmap.CompressFormat.PNG,100,fosQ);
-                        fosQ.flush();
-                        fosQ.close();
+                        //  fosQ = resolver.openOutputStream(imageUri);
+                       // System.out.println(imageUri.getPath());
+                       // bmp.compress(Bitmap.CompressFormat.PNG,100,fosQ);
+                        //fosQ.flush();
+                        //fosQ.close();
                        File fileDefault = new File(Environment.getExternalStorageDirectory() + "/DCIM/REFOOD_RES/" + rand  +"_.png");
-                       textViewPath.setText(fileDefault.getAbsolutePath());
-                       Bitmap defBitmat = BitmapFactory.decodeFile(fileDefault.getAbsolutePath());
-                        imgPlacement.setImageBitmap(defBitmat);
 
-                    }
+                       fileOutputStream = new FileOutputStream(fileDefault);
+                       textViewPath.setText(fileDefault.getAbsolutePath());
+                       bmp.compress(Bitmap.CompressFormat.PNG,100,fileOutputStream);
+
+                       Bitmap defBitmat = BitmapFactory.decodeFile(fileDefault.getAbsolutePath());
+                       imgPlacement.setImageBitmap(defBitmat);
+
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -203,10 +206,19 @@ public class EditDataBarangFragment extends Fragment {
                                 stockItem.setText(String.valueOf(getMenuMakan.get(position).getStockItem()));
                                 idItem.setText(String.valueOf(position));
                                 if(getMenuMakan.size() - 1 == position){
-                                    getMenuMakan.add(new Menu("Tambahkan Menu Makanan",0,0,false,R.drawable.ic_baseline_add_24));
+                                    getMenuMakan.add(new Menu(  "Tambahkan Menu Makanan",0,0,false,R.drawable.ic_baseline_add_24));
                                     saveMenuMakan(getMenuMakan);
                                     adapter.notifyDataSetChanged();
+                                    adapterMenuEdit.notifyDataSetChanged();
                                 }
+                                adapter.notifyDataSetChanged();
+                            }
+                            @Override
+                            public void deleteItemListener(int positionOfItem) {
+                                Toast.makeText(getActivity().getApplicationContext(),"Menghapus Menu Menu " + getMenuMakan.get(positionOfItem).getNamaItem()+ " Berhasil ",Toast.LENGTH_SHORT).show();
+                                getMenuMakan.remove(positionOfItem);
+                                saveMenuMakan(getMenuMakan);
+                                adapterMenuEdit.notifyDataSetChanged();
                             }
                         };
                         buttonSimpan.setOnClickListener(new View.OnClickListener() {
@@ -216,6 +228,7 @@ public class EditDataBarangFragment extends Fragment {
                             //getMenuMinuman.set(position,new Menu(namaItem.getText().toString(),Integer.parseInt(hargaItem.getText().toString()),Integer.parseInt(stockItem.getText().toString()),false,R.drawable.minuman_3_es_jerul));
                             getMenuMakan.set(Integer.parseInt(idItem.getText().toString()),new Menu(namaItem.getText().toString(),Integer.parseInt(hargaItem.getText().toString()),Integer.parseInt(stockItem.getText().toString()),false,textViewPath.getText().toString()));
                             adapter.notifyDataSetChanged();
+                            adapterMenuEdit.notifyDataSetChanged();
                             saveMenuMakan(getMenuMakan);
                         }
                     });
@@ -224,7 +237,6 @@ public class EditDataBarangFragment extends Fragment {
                         recyclerViewMenu.setAdapter(adapterMenuEdit);
                         break;
                     case "Menu Minuman":
-                        AdapterMenuEdit adapterMenuMinuman;
                         List<Menu> getMenuMinuman = getMenuMinuman();
                         listenerEditMenuMakan = new AdapterMenuEdit.clickMakananItem() {
                             @Override
@@ -239,7 +251,16 @@ public class EditDataBarangFragment extends Fragment {
                                     getMenuMinuman. add(new Menu("Tambahkan Menu",0,0,false,"Kosong"));
                                     saveMenuMinuman(getMenuMinuman);
                                     adapter.notifyDataSetChanged();
+                                    adapterMenuEdit.notifyDataSetChanged();
                                 }
+                                adapter.notifyDataSetChanged();
+                            }
+                            @Override
+                            public void deleteItemListener(int positionOfItem) {
+                                Toast.makeText(getActivity().getApplicationContext(),"Menghapus Menu Minuman " + getMenuMinuman.get(positionOfItem).getNamaItem()+ " Berhasil ",Toast.LENGTH_SHORT).show();
+                                getMenuMinuman.remove(positionOfItem);
+                                saveMenuMinuman(getMenuMinuman);
+                                adapterMenuEdit.notifyDataSetChanged();
                             }
                         };
                         buttonSimpan.setOnClickListener(new View.OnClickListener() {
@@ -248,13 +269,12 @@ public class EditDataBarangFragment extends Fragment {
                                 System.out.println("name item = " + namaItem.getText().toString());
                                 //getMenuMinuman.set(position,new Menu(namaItem.getText().toString(),Integer.parseInt(hargaItem.getText().toString()),Integer.parseInt(stockItem.getText().toString()),false,R.drawable.minuman_3_es_jerul));
                                 getMenuMinuman.set(Integer.parseInt(idItem.getText().toString()),new Menu(namaItem.getText().toString(),Integer.parseInt(hargaItem.getText().toString()),Integer.parseInt(stockItem.getText().toString()),false,textViewPath.getText().toString()));
-                                adapter.notifyDataSetChanged();
                                 saveMenuMinuman(getMenuMinuman);
                             }
                         });
-                        adapterMenuMinuman = new AdapterMenuEdit(getMenuMinuman(),listenerEditMenuMakan,getActivity().getApplicationContext());
-                        adapterMenuMinuman.notifyDataSetChanged();
-                        recyclerViewMenu.setAdapter(adapterMenuMinuman);
+                        adapterMenuEdit = new AdapterMenuEdit(getMenuMinuman(),listenerEditMenuMakan,getActivity().getApplicationContext());
+                        adapterMenuEdit.notifyDataSetChanged();
+                        recyclerViewMenu.setAdapter(adapterMenuEdit);
                         break;
                     case "Menu Lauk":
                         List<Menu> getMenuLauk = getMenuLauk();
@@ -272,6 +292,13 @@ public class EditDataBarangFragment extends Fragment {
                                     adapter.notifyDataSetChanged();
                                 }
                             }
+                            @Override
+                            public void deleteItemListener(int positionOfItem) {
+                                getMenuLauk.remove(positionOfItem);
+                                saveMenuLauk(getMenuLauk);
+                                adapterMenuEdit.notifyDataSetChanged();
+                                Toast.makeText(getActivity().getApplicationContext(),"Menghapus Lauk Minuman " + getMenuLauk.get(positionOfItem).getNamaItem()+ " Berhasil ",Toast.LENGTH_SHORT).show();
+                            }
                         };
                         buttonSimpan.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -280,11 +307,12 @@ public class EditDataBarangFragment extends Fragment {
                                 //getMenuMinuman.set(position,new Menu(namaItem.getText().toString(),Integer.parseInt(hargaItem.getText().toString()),Integer.parseInt(stockItem.getText().toString()),false,R.drawable.minuman_3_es_jerul));
                                 getMenuLauk.set(Integer.parseInt(idItem.getText().toString()),new Menu(namaItem.getText().toString(),Integer.parseInt(hargaItem.getText().toString()),Integer.parseInt(stockItem.getText().toString()),false,textViewPath.getText().toString()));
                                 adapter.notifyDataSetChanged();
+                                adapterMenuEdit.notifyDataSetChanged();
                                 saveMenuLauk(getMenuLauk);
-
                             }
                         });
                         adapterMenuEdit = new AdapterMenuEdit(getMenuLauk,listenerEditMenuMakan,getActivity().getApplicationContext());
+                        adapterMenuEdit.notifyDataSetChanged();
                         recyclerViewMenu.setAdapter(adapterMenuEdit);
                         break;
                 }
@@ -298,13 +326,7 @@ public class EditDataBarangFragment extends Fragment {
             }
         });
     }
-    List<Menu> getDefaultPrefencesMenuMakanan(){
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("PREF_MENU_MAKANAN", Context.MODE_PRIVATE);
-        Type typeMenu = new TypeToken<List<Menu>>(){}.getType();
-        Gson gson = new Gson();
-        List<Menu> listMenuMakanan = gson.fromJson(sharedPreferences.getString("KEY_MENU_MAKANAN",""),typeMenu);
-        return listMenuMakanan;
-    }
+
 
     void saveMenuMakan(List<Menu> menuMakananList){
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("PREF_MENU_MAKANAN", Context.MODE_PRIVATE);
@@ -328,6 +350,13 @@ public class EditDataBarangFragment extends Fragment {
         Gson gson = new Gson();
         String gsonMenuMakan = gson.toJson(menuLaukList);
         editor.putString("KEY_MENU_LAUK",gsonMenuMakan).commit();
+    }
+    List<Menu> getDefaultPrefencesMenuMakanan(){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("PREF_MENU_MAKANAN", Context.MODE_PRIVATE);
+        Type typeMenu = new TypeToken<List<Menu>>(){}.getType();
+        Gson gson = new Gson();
+        List<Menu> listMenuMakanan = gson.fromJson(sharedPreferences.getString("KEY_MENU_MAKANAN",""),typeMenu);
+        return listMenuMakanan;
     }
     List<Menu> getDefaultPrefencesMenuMinuman(){
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("PREF_MENU_MINUMAN", Context.MODE_PRIVATE);

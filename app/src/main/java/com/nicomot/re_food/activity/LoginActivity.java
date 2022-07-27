@@ -65,22 +65,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     if(editTextUsername.getText().toString().equals(account.getUsernameAccount()) && editTextPassword.getText().toString().equals(account.getPasswordAccount())){
                         if(account.getTypeAccount().equals("DAPUR")){
                             //activity Dapur
-                            Toast.makeText(getApplicationContext(),"Login Berhasil",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(),"Login Berhasil Ke Dapur",Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(),DapurActivity.class);
                             intent.putExtra("KERJA","DAPUR");
                             startActivity(intent);
                         } else if(account.getTypeAccount().equals("KASIR")){
+                            Toast.makeText(getApplicationContext(),"Login Berhasil Ke Kasir",Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(),BaseActivity.class);
                             intent.putExtra("KERJA","KASIR");
                             startActivity(intent);
+
                         }
                      } else{
+
                         editTextUsername.setError("Harap Cek Kembali Username Anda");
                         editTextPassword.setError("Harap Cek Kembali Password Anda");
-                        Toast.makeText(getApplicationContext(),"Login Gagal",Toast.LENGTH_SHORT).show();
-
                     }
-                    System.out.println(account.getUsernameAccount() + " hallo ");
 
                 }
             }
