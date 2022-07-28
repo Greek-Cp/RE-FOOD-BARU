@@ -42,7 +42,6 @@ public class AdapterPesanan extends RecyclerView.Adapter<AdapterPesanan.ViewHold
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_order_pesanan,parent,false);
         return new ViewHolder(v);
     }
-
     @Override
     public void onBindViewHolder(@NonNull AdapterPesanan.ViewHolder holder, int position) {
         holder.tv_Id_Pesan.setText("#"+position);
@@ -80,7 +79,7 @@ public class AdapterPesanan extends RecyclerView.Adapter<AdapterPesanan.ViewHold
             tv_Id_Pesan = itemView.findViewById(R.id.tv_id_pesanan_adapter_);
             tv_Nama_Pemesan = itemView.findViewById(R.id.tv_id_nama_pemesan_adapter);
             tv_Alamat_Pemesan = itemView.findViewById(R.id.tv_id_alamat_pemesan_adapter);
-            cardColorMenu = itemView.findViewById(R.id.id_card_pesanan);
+            cardColorMenu = itemView.findViewById(R.id.id_card_status_color);
             tv_Harga = itemView.findViewById(R.id.id_tv_harga_adapter_card);
             recyclerViewMenuMakan = itemView.findViewById(R.id.id_rec_menu_makanan_inside_rec_list_pesanan);
             itemView.setOnClickListener(this::onClick);

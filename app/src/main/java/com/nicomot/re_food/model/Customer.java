@@ -3,6 +3,7 @@ package com.nicomot.re_food.model;
 import java.util.List;
 
 public class Customer {
+    private int noCustomer;
     private String name;
     private List<String> listMessage;
     private List<Pesanan> pesananMakanan;
@@ -12,6 +13,7 @@ public class Customer {
     private int totalPesanan;
     boolean statusPesanan;
     private String messageTagihan;
+    private String tanggal;
 
     public Customer(){
 
@@ -43,14 +45,40 @@ public class Customer {
     private boolean pesananDihantarkan;
     private boolean stateKondisiMemesan;
     private DataDiri dataDiri;
-    public Customer(String name, List<String> listMessage , List<Pesanan> pesananMakanan , List<Pesanan> pesananMinuman , List<Pesanan> pesananLaukPauk ,
-                    boolean stateKondisiMemesan) {
+    public Customer(String name , List<Pesanan> semuaPesanan,
+                    int noCustomer,String tanggal){
+        this.name = name;
+        this.semuaPesanan = semuaPesanan;
+        this.noCustomer = noCustomer;
+        this.tanggal = tanggal;
+    }
+    public Customer(String name, List<String> listMessage , List<Pesanan> pesananMakanan ,
+                    List<Pesanan> pesananMinuman , List<Pesanan> pesananLaukPauk ,
+                    boolean stateKondisiMemesan,int noCustomer , String tanggal) {
         this.name = name;
         this.listMessage = listMessage;
         this.pesananMakanan = pesananMakanan;
         this.pesananMinuman = pesananMinuman;
         this.pesananSnack = pesananLaukPauk;
         this.stateKondisiMemesan = stateKondisiMemesan;
+        this.noCustomer = noCustomer;
+        this.tanggal = tanggal;
+    }
+
+    public int getNoCustomer() {
+        return noCustomer;
+    }
+
+    public void setNoCustomer(int noCustomer) {
+        this.noCustomer = noCustomer;
+    }
+
+    public String getTanggal() {
+        return tanggal;
+    }
+
+    public void setTanggal(String tanggal) {
+        this.tanggal = tanggal;
     }
 
     public String getMessageTagihan() {

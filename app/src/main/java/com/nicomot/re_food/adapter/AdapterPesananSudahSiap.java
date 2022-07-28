@@ -35,7 +35,7 @@ public class AdapterPesananSudahSiap extends RecyclerView.Adapter<AdapterPesanan
     }
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_pesanan_dapur,parent,false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_order_pesanan,parent,false);
         return new ViewHolder(v);
     }
 
@@ -48,15 +48,14 @@ public class AdapterPesananSudahSiap extends RecyclerView.Adapter<AdapterPesanan
         holder.recyclerViewMenuMakan.setAdapter(adapterImageMenu);
         Random rnd = new Random();
         int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-        holder.cardColorMenu.setCardBackgroundColor(color);
-        if(!listPesanan.get(position).isStatusPesanan()){
-            holder.tv_Harga.setText("SEGERA DI SIAPKAN");
-            holder.radioButtonSiap.setSelected(false);
-        } else{
-            holder.tv_Harga.setText("PESANAN SUDAH SIAP");
-            holder.radioButtonSiap.setSelected(true);
-        }
-        holder.radioButtonSiap.setVisibility(View.INVISIBLE);
+        holder.cardColorStatus.setCardBackgroundColor(color);
+        holder.btnSiap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listenerClick.clickPesanan(position);
+            }
+        });
+
 
     }
     @Override
@@ -68,7 +67,7 @@ public class AdapterPesananSudahSiap extends RecyclerView.Adapter<AdapterPesanan
         TextView tv_Id_Pesan, tv_Nama_Pemesan , tv_Alamat_Pemesan ,tv_Harga;
         CardView cardColorMenu ,cardColorStatus;
         RecyclerView recyclerViewMenuMakan;
-        RadioButton radioButtonSiap;
+        CardView btnSiap;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -76,10 +75,9 @@ public class AdapterPesananSudahSiap extends RecyclerView.Adapter<AdapterPesanan
             tv_Id_Pesan = itemView.findViewById(R.id.tv_id_pesanan_adapter_);
             tv_Nama_Pemesan = itemView.findViewById(R.id.tv_id_nama_pemesan_adapter);
             tv_Alamat_Pemesan = itemView.findViewById(R.id.tv_id_alamat_pemesan_adapter);
-            cardColorMenu = itemView.findViewById(R.id.id_card_pesanan);
+            btnSiap = itemView.findViewById(R.id.id_btn_antarkan_pesanan);
             tv_Harga = itemView.findViewById(R.id.id_tv_harga_adapter_card);
             recyclerViewMenuMakan = itemView.findViewById(R.id.id_rec_menu_makanan_inside_rec_list_pesanan);
-            radioButtonSiap = itemView.findViewById(R.id.id_radio_button_sudah_siap);
             itemView.setOnClickListener(this::onClick);
         }
 

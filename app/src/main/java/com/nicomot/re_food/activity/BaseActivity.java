@@ -27,6 +27,7 @@ import com.nicomot.re_food.R;
 import com.nicomot.re_food.fragment.AccountFragment;
 import com.nicomot.re_food.fragment.FragmentDapur;
 import com.nicomot.re_food.fragment.HomeFragment;
+import com.nicomot.re_food.fragment.OrderBaseFragment;
 import com.nicomot.re_food.fragment.OrderListFragment;
 import com.nicomot.re_food.service.ServiceNotificationListener;
 import com.nicomot.re_food.util.ShowMessage;
@@ -148,14 +149,14 @@ public class BaseActivity extends AppCompatActivity {
 
     }
     void navBarItemListener(BottomNavigationView bottomNavigationView){
-        switchFragment(getSupportFragmentManager(),new HomeFragment());
+        switchFragment(getSupportFragmentManager(),new OrderBaseFragment());
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.id_nav_home:
                         tryReconnectService();
-                        switchFragment(getSupportFragmentManager(),new HomeFragment());
+                        switchFragment(getSupportFragmentManager(),new OrderBaseFragment());
                         break;
                     case R.id.id_nav_pesanan:
                         switchFragment(getSupportFragmentManager(),new OrderListFragment());

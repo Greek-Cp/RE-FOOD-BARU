@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -168,8 +169,11 @@ public class EditDataBarangFragment extends Fragment {
         imgPlacement = view.findViewById(R.id.id_img_tmep);
         pilihGambar = view.findViewById(R.id.id_btn_pilih_gambar);
         textViewPath =view.findViewById(R.id.id_tv_path_img);
+
+
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity().getApplicationContext(),
                 R.array.menu_array, android.R.layout.simple_spinner_item);
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerMenu.setAdapter(adapter);
 
@@ -252,6 +256,7 @@ public class EditDataBarangFragment extends Fragment {
                                     saveMenuMinuman(getMenuMinuman);
                                     adapter.notifyDataSetChanged();
                                     adapterMenuEdit.notifyDataSetChanged();
+                                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.id_base_frame, new EditDataBarangFragment()).commit();
                                 }
                                 adapter.notifyDataSetChanged();
                             }
@@ -261,6 +266,8 @@ public class EditDataBarangFragment extends Fragment {
                                 getMenuMinuman.remove(positionOfItem);
                                 saveMenuMinuman(getMenuMinuman);
                                 adapterMenuEdit.notifyDataSetChanged();
+                                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.id_base_frame, new EditDataBarangFragment()).commit();
+
                             }
                         };
                         buttonSimpan.setOnClickListener(new View.OnClickListener() {
@@ -290,6 +297,8 @@ public class EditDataBarangFragment extends Fragment {
                                     getMenuLauk.add(new Menu("Tambahkan Menu",0,0,false,"Kosong"));
                                     saveMenuLauk(getMenuLauk);
                                     adapter.notifyDataSetChanged();
+                                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.id_base_frame, new EditDataBarangFragment()).commit();
+
                                 }
                             }
                             @Override
@@ -298,6 +307,8 @@ public class EditDataBarangFragment extends Fragment {
                                 saveMenuLauk(getMenuLauk);
                                 adapterMenuEdit.notifyDataSetChanged();
                                 Toast.makeText(getActivity().getApplicationContext(),"Menghapus Lauk Minuman " + getMenuLauk.get(positionOfItem).getNamaItem()+ " Berhasil ",Toast.LENGTH_SHORT).show();
+                                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.id_base_frame, new EditDataBarangFragment()).commit();
+
                             }
                         };
                         buttonSimpan.setOnClickListener(new View.OnClickListener() {

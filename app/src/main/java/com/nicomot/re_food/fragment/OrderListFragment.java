@@ -139,6 +139,11 @@ public class OrderListFragment extends Fragment {
     FirebaseDatabase database;
     DatabaseReference myRef;
     ImageView btnRefresh;
+    void insertLogDataValidPesananKeDatabase(Customer customer){
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://re-food-7fc1b-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        DatabaseReference myRef = database.getReference("LogPesanan").child(String.valueOf(customer.getNoCustomer()));
+        myRef.setValue(customer);
+    }
 
     void setAdapterListPesanan() {
         listCustomerValid = new ArrayList<>();
@@ -182,11 +187,19 @@ public class OrderListFragment extends Fragment {
                 listenerClickPesanan = new AdapterPesananSudahSiap.clickPesanan() {
                     @Override
                     public void clickPesanan(int pesanan) {
+                        insertLogDataValidPesananKeDatabase(listCustomerValid.get(pesanan));
+                        DatabaseReference dbR = database.getReference().child("CustomerValid").child(listCustomerValid.get(pesanan).getName());
+                        dbR.removeValue();
+                        listCustomerValid.remove(pesanan);
+                        Toast.makeText(getActivity().getApplicationContext(),"Pesanan Siap Diantarkan",Toast.LENGTH_SHORT).show();
+                        adapterDapur.notifyDataSetChanged();
+                        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.id_base_frame, new OrderListFragment()).commit();
+
                     }
                     @Override
                     public void clickRadio(int positions, boolean status) {
                         listCustomerValid.get(positions).setStatusPesanan(status);
-                        saveListValidCustomer(listCustomerValid);
+
                     }
                 };
                 adapterDapur = new AdapterPesananSudahSiap(listCustomerValid, listenerClickPesanan,listMenu);

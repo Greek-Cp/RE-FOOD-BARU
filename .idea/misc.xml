@@ -16,20 +16,24 @@
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/activity_main.xml" value="0.16869300911854104" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/activity_register.xml" value="0.12" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/activity_splash_screen.xml" value="0.1" />
-        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/adapter_layout_img_pesanan.xml" value="0.1" />
-        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/adapter_layout_img_siapkan_pesanan.xml" value="0.14" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/adapter_layout_img_pesanan.xml" value="0.33" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/adapter_layout_img_pesanan_khusus_order_manual.xml" value="0.33" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/adapter_layout_img_siapkan_pesanan.xml" value="0.33" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/adapter_layout_menu_tersedia.xml" value="0.33" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/adapter_layout_pesanan.xml" value="0.19610507246376813" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/adapter_pesanan_dapur..xml" value="0.1" />
-        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/adapter_pesanan_dapur.xml" value="0.1" />
-        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/card_order_pesanan.xml" value="0.1" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/adapter_pesanan_dapur.xml" value="0.18" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/card_order_pesanan.xml" value="0.22" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/card_order_pesanankhusus_order_manual.xml" value="0.23354958294717332" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/filemngr_folderlayout.xml" value="0.13832738803012287" />
-        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_account.xml" value="0.12" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_account.xml" value="0.25" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_create_order_manual.xml" value="0.25" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_dapur.xml" value="0.1" />
-        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_edit_data_barang.xml" value="0.14" />
-        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_home.xml" value="0.1" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_edit_data_barang.xml" value="0.33" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_home.xml" value="0.18" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_login.xml" value="0.19610507246376813" />
-        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_order_list.xml" value="0.16" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_order_base.xml" value="0.22" />
+        <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_order_list.xml" value="0.25" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/fragment_siapkan_pesanan.xml" value="0.1" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/layout/layout_adapter_list_pesanan_card.xml" value="0.33" />
         <entry key="..\:/Users/kitan/AndroidStudioProjects/REFOOD/app/src/main/res/menu/menu_nav_view.xml" value="0.2" />

@@ -19,15 +19,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/id_search_test"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintLeft_toRightOf="@id/id_img_logo_home"
-            app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginTop="100dp"
-            />
+
 
     <TextView
         android:layout_width="wrap_content"
@@ -48,7 +40,7 @@
         android:orientation="vertical"
         tools:listitem="@layout/card_order_pesanan"
         app:layout_constraintTop_toBottomOf="@id/id_tv_list_notes"
-        android:layout_marginTop="330dp"
+        android:layout_marginTop="30dp"
         android:id="@+id/id_rec_list_pesanan_cust"
         android:layout_marginBottom="30dp"
         android:paddingBottom="150dp"

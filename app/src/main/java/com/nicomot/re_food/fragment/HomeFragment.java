@@ -98,8 +98,8 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         recListPesananCustomer = view.findViewById(R.id.id_rec_list_pesanan_cust);
-        debugLog = view.findViewById(R.id.id_search_test);
-        debugLog.setText(getLogModelCustomer("From Home Fragment"));
+        //debugLog = view.findViewById(R.id.id_search_test);
+        //debugLog.setText(getLogModelCustomer("From Home Fragment"));
         setAdapterListPesanan();
     }
 

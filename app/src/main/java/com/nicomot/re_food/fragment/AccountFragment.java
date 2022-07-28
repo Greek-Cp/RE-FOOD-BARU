@@ -1,17 +1,21 @@
 package com.nicomot.re_food.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.nicomot.re_food.R;
+import com.nicomot.re_food.activity.LoginActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,19 +56,27 @@ public class AccountFragment extends Fragment {
     }
 
 
-    CardView btnEditBarang , btnPengaturan , btnMetodePembayaran , btnLogout;
+    CardView btnEditBarang , btnPengaturan , btnMetodePembayaran;
+    ConstraintLayout  btnLogout;
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         btnEditBarang = view.findViewById(R.id.id_btn_edit_barang);
-        btnPengaturan = view.findViewById(R.id.id_btn_pengaturan);
-
+        btnLogout = view.findViewById(R.id.id_btn_logout_account);
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+                Toast.makeText(getActivity().getApplicationContext(),"Log Out Berhasil ",Toast.LENGTH_SHORT).show();;
+            }
+        });
         btnEditBarang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // go frame edit data barang
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.id_base_frame,new EditDataBarangFragment()).commit();
-
             }
         });
     }

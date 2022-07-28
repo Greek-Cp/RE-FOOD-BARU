@@ -190,7 +190,6 @@ public class FragmentDapur extends Fragment {
 
         return listMenuMakanan;
     }
-
     List<Menu> getMenuMinuman(){
         List<Menu> listMenuMinuman = getDefaultPrefencesMenuMinuman();
 
