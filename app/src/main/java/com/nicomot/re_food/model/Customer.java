@@ -15,6 +15,16 @@ public class Customer {
     private String messageTagihan;
     private String tanggal;
 
+    private boolean statusSudahDiSiapkan = false;
+
+    public boolean isStatusSudahDiSiapkan() {
+        return statusSudahDiSiapkan;
+    }
+
+    public void setStatusSudahDiSiapkan(boolean statusSudahDiSiapkan) {
+        this.statusSudahDiSiapkan = statusSudahDiSiapkan;
+    }
+
     public Customer(){
 
     }

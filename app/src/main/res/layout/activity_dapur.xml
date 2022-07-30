@@ -29,10 +29,11 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/id_img_logo_home"
         android:textStyle="bold"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="60dp"
         android:layout_marginLeft="10dp"
         android:id="@+id/id_tv_list_notes"
         android:textColor="?text_color"
+        android:textSize="@dimen/_10sdp"
         />
         <ImageView
             android:layout_width="@dimen/_30sdp"
@@ -51,22 +52,47 @@
             app:layout_constraintLeft_toLeftOf="@id/id_btn_refresh"
             app:layout_constraintRight_toRightOf="@id/id_btn_refresh"
             android:textSize="@dimen/_10sdp"
+
+            android:textStyle="bold"
+            android:textColor="@color/black"
             android:id="@+id/id_tv_refresh"
             />
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:orientation="vertical"
-        tools:listitem="@layout/card_order_pesanan"
-        android:id="@+id/id_rec_list_pesanan_cust"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/id_tv_refresh"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="30dp"
-        tools:itemCount="2"
-        android:paddingBottom="100dp"
-        />
+
+        <ImageView
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:src="@drawable/ic_logout"
+            app:layout_constraintRight_toLeftOf="@id/id_btn_refresh"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="15dp"
+            android:id="@+id/id_btn_logout"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Log-Out"
+            app:layout_constraintTop_toBottomOf="@id/id_btn_logout"
+            app:layout_constraintLeft_toLeftOf="@id/id_btn_logout"
+            app:layout_constraintRight_toRightOf="@id/id_btn_logout"
+            android:textSize="@dimen/_10sdp"
+            android:id="@+id/id_tv_logout"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/id_rec_list_pesanan_cust"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="100dp"
+            android:layout_marginTop="30dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/id_tv_list_notes"
+            tools:itemCount="2"
+            tools:listitem="@layout/card_order_pesanan" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

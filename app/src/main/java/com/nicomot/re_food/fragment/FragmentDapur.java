@@ -154,7 +154,7 @@ public class FragmentDapur extends Fragment {
                 @Override
                 public void clickPesanan(int pesanan) {
                     Toast.makeText(getActivity().getApplicationContext(), "Pesanan ke - " + pesanan + " dipilih", Toast.LENGTH_SHORT).show()    ;
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.id_base_frame,new SiapkanPesanan(listCustomerValid.get(pesanan))).commit();
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.id_base_frame,new SiapkanPesanan(listCustomerValid.get(pesanan),0)).commit();
                 }
             };
 
@@ -163,7 +163,6 @@ public class FragmentDapur extends Fragment {
         }
 
     }
-
     List<Menu> getDefaultPrefencesMenuMakanan(){
         SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("PREF_MENU_MAKANAN", Context.MODE_PRIVATE);
         Type typeMenu = new TypeToken<List<Menu>>(){}.getType();

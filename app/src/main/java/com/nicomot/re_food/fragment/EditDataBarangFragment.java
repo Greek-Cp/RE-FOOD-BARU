@@ -1,5 +1,7 @@
 package com.nicomot.re_food.fragment;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,10 +26,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -139,6 +144,19 @@ public class EditDataBarangFragment extends Fragment {
             }
         }
     });
+    Dialog dialogs;
+    void showDialogAfterDelete(){
+        dialogs = new Dialog(getActivity());
+        View view  = getActivity().getLayoutInflater().inflate(R.layout.dialog_hapus, null);
+        dialogs.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogs.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogs.setContentView(view);
+        dialogs.show();
+    }
+    void closeDialogAfterDelete(){
+        dialogs.dismiss();
+
+    }
       String getRandomNumberString() {
         // It will generate 6 digit random Number.
         // from 0 to 999999
@@ -163,20 +181,16 @@ public class EditDataBarangFragment extends Fragment {
         namaItem = view.findViewById(R.id.id_text_input_edit_text_nama_item);
         hargaItem = view.findViewById(R.id.id_text_input_edit_text_harga_item);
         stockItem = view.findViewById(R.id.id_text_input_edit_text_stock_item);
-        statusItem = view.findViewById(R.id.id_text_input_edit_text_status_item);
+
         buttonSimpan = view.findViewById(R.id.id_btn_simpan_menu_perubahan);
         idItem = view.findViewById(R.id.id_text_input_edit_text_id_menu);
         imgPlacement = view.findViewById(R.id.id_img_tmep);
         pilihGambar = view.findViewById(R.id.id_btn_pilih_gambar);
         textViewPath =view.findViewById(R.id.id_tv_path_img);
-
-
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity().getApplicationContext(),
                 R.array.menu_array, android.R.layout.simple_spinner_item);
-
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerMenu.setAdapter(adapter);
-
         pilihGambar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -186,7 +200,6 @@ public class EditDataBarangFragment extends Fragment {
         spinnerMenu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
                 AdapterMenuEdit.clickMakananItem listenerEditMenuMakan;
                 switch (adapter.getItem(i).toString()){
                     case "Menu Makanan":
@@ -223,6 +236,14 @@ public class EditDataBarangFragment extends Fragment {
                                 getMenuMakan.remove(positionOfItem);
                                 saveMenuMakan(getMenuMakan);
                                 adapterMenuEdit.notifyDataSetChanged();
+                                showDialogAfterDelete();
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        closeDialogAfterDelete();
+                                    }
+                                },3000);
                             }
                         };
                         buttonSimpan.setOnClickListener(new View.OnClickListener() {
@@ -234,6 +255,14 @@ public class EditDataBarangFragment extends Fragment {
                             adapter.notifyDataSetChanged();
                             adapterMenuEdit.notifyDataSetChanged();
                             saveMenuMakan(getMenuMakan);
+                            showDialogAddPesananSuccess();
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    closeDialogAddPesananSuccess();
+                                }
+                            },3000);
                         }
                     });
                         adapterMenuEdit = new AdapterMenuEdit(getMenuMakan,listenerEditMenuMakan,getActivity().getApplicationContext());
@@ -263,6 +292,15 @@ public class EditDataBarangFragment extends Fragment {
                             @Override
                             public void deleteItemListener(int positionOfItem) {
                                 Toast.makeText(getActivity().getApplicationContext(),"Menghapus Menu Minuman " + getMenuMinuman.get(positionOfItem).getNamaItem()+ " Berhasil ",Toast.LENGTH_SHORT).show();
+                                showDialogAfterDelete();
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        closeDialogAfterDelete();
+                                    }
+                                },3000);
+
                                 getMenuMinuman.remove(positionOfItem);
                                 saveMenuMinuman(getMenuMinuman);
                                 adapterMenuEdit.notifyDataSetChanged();
@@ -276,7 +314,14 @@ public class EditDataBarangFragment extends Fragment {
                                 System.out.println("name item = " + namaItem.getText().toString());
                                 //getMenuMinuman.set(position,new Menu(namaItem.getText().toString(),Integer.parseInt(hargaItem.getText().toString()),Integer.parseInt(stockItem.getText().toString()),false,R.drawable.minuman_3_es_jerul));
                                 getMenuMinuman.set(Integer.parseInt(idItem.getText().toString()),new Menu(namaItem.getText().toString(),Integer.parseInt(hargaItem.getText().toString()),Integer.parseInt(stockItem.getText().toString()),false,textViewPath.getText().toString()));
-                                saveMenuMinuman(getMenuMinuman);
+                                showDialogAddPesananSuccess();
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                      closeDialogAddPesananSuccess();
+                                    }
+                                },3000);
                             }
                         });
                         adapterMenuEdit = new AdapterMenuEdit(getMenuMinuman(),listenerEditMenuMakan,getActivity().getApplicationContext());
@@ -300,9 +345,19 @@ public class EditDataBarangFragment extends Fragment {
                                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.id_base_frame, new EditDataBarangFragment()).commit();
 
                                 }
+
                             }
                             @Override
                             public void deleteItemListener(int positionOfItem) {
+                                showDialogAfterDelete();
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        closeDialogAfterDelete();
+                                    }
+                                },3000);
+
                                 getMenuLauk.remove(positionOfItem);
                                 saveMenuLauk(getMenuLauk);
                                 adapterMenuEdit.notifyDataSetChanged();
@@ -314,12 +369,19 @@ public class EditDataBarangFragment extends Fragment {
                         buttonSimpan.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                System.out.println("name item = " + namaItem.getText().toString());
                                 //getMenuMinuman.set(position,new Menu(namaItem.getText().toString(),Integer.parseInt(hargaItem.getText().toString()),Integer.parseInt(stockItem.getText().toString()),false,R.drawable.minuman_3_es_jerul));
                                 getMenuLauk.set(Integer.parseInt(idItem.getText().toString()),new Menu(namaItem.getText().toString(),Integer.parseInt(hargaItem.getText().toString()),Integer.parseInt(stockItem.getText().toString()),false,textViewPath.getText().toString()));
                                 adapter.notifyDataSetChanged();
                                 adapterMenuEdit.notifyDataSetChanged();
                                 saveMenuLauk(getMenuLauk);
+                                showDialogAddPesananSuccess();
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        closeDialogAddPesananSuccess();
+                                    }
+                                },3000);
                             }
                         });
                         adapterMenuEdit = new AdapterMenuEdit(getMenuLauk,listenerEditMenuMakan,getActivity().getApplicationContext());
@@ -337,7 +399,18 @@ public class EditDataBarangFragment extends Fragment {
             }
         });
     }
-
+    Dialog dialogAddMenu;
+    void showDialogAddPesananSuccess(){
+        dialogAddMenu = new Dialog(getActivity());
+        View view  = getActivity().getLayoutInflater().inflate(R.layout.dialog_simpan_menu_succes, null);
+        dialogAddMenu.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogAddMenu.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogAddMenu.setContentView(view);
+        dialogAddMenu.show();
+    }
+    void closeDialogAddPesananSuccess(){
+        dialogAddMenu.dismiss();
+    }
 
     void saveMenuMakan(List<Menu> menuMakananList){
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("PREF_MENU_MAKANAN", Context.MODE_PRIVATE);

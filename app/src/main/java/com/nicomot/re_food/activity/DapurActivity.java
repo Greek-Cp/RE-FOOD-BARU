@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Adapter;
@@ -52,7 +53,7 @@ public class DapurActivity extends AppCompatActivity {
     DatabaseReference myRef;
     ArrayList< Customer> listCustomerFromDatabase;
     int postItem = 0;
-    ImageView btnRefresh;
+    ImageView btnRefresh,btnLogout;
     void refresh(){
         Intent refresh = new Intent(getApplicationContext(),DapurActivity.class);
         refresh.setFlags(FLAG_ACTIVITY_CLEAR_TOP | FLAG_ACTIVITY_NEW_TASK |
@@ -60,6 +61,19 @@ public class DapurActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(),"Refresh Berhasil",Toast.LENGTH_SHORT).show();
         startActivity(refresh);
 
+    }
+    @Override
+    public void onBackPressed() {
+
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode== KeyEvent.KEYCODE_BACK) {
+            super.onKeyDown(keyCode, event);
+            return true;
+        }
+        return false;
     }
     List<Customer> getDataCustomerFromDatabase(){
         listCustomerFromDatabase = new ArrayList<>();
@@ -92,7 +106,7 @@ public class DapurActivity extends AppCompatActivity {
                 System.out.println("position = " + positions);
                 listCustomerFromDatabase.get(positions).setStatusPesanan(status);
                 Customer custTemporary = listCustomerFromDatabase.get(positions);
-                DatabaseReference dbR = database.getReference().child("Customer").child(custTemporary.getName());
+                DatabaseReference dbR = database.getReference().child("Customer").child(String.valueOf(custTemporary.getNoCustomer()));
                 dbR.removeValue();
                 saveListValidCustomer(listCustomerFromDatabase);
                 insertDataValidPesananKeDatabase(listCustomerFromDatabase.get(positions));
@@ -123,6 +137,7 @@ public class DapurActivity extends AppCompatActivity {
                 listMenu.add(mLauk);
             }
         }
+
 
         adapterDapur = new AdapterDapur(listCustomerFromDatabase,listenerClickPesanan,listMenu);
         recListPesananCustomer.setAdapter(adapterDapur);
@@ -155,10 +170,20 @@ public class DapurActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dapur);
         hiddenActionBar();
         btnRefresh = findViewById(R.id.id_btn_refresh);
+        btnLogout = findViewById(R.id.id_btn_logout);
         btnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 refresh();
+            }
+        });
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DapurActivity.this, LoginActivity.class);
+                Toast.makeText(getApplicationContext(),"LogOut Dari Dapur ", Toast.LENGTH_LONG).show();
+                startActivity(intent);
+
             }
         });
         recListPesananCustomer = findViewById(R.id.id_rec_list_pesanan_cust);
@@ -203,7 +228,7 @@ public class DapurActivity extends AppCompatActivity {
 
     void insertDataValidPesananKeDatabase(Customer customer){
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://re-food-7fc1b-default-rtdb.asia-southeast1.firebasedatabase.app/");
-        DatabaseReference myRef = database.getReference("CustomerValid").child(customer.getName());
+        DatabaseReference myRef = database.getReference("CustomerValid").child(String.valueOf(customer.getNoCustomer()));
         myRef.setValue(customer);
     }
     void saveListValidCustomer(List<Customer> listCustomer){

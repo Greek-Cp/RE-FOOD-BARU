@@ -17,6 +17,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -133,6 +134,21 @@ public class BaseActivity extends AppCompatActivity {
         if(getSupportActionBar() != null){
             getSupportActionBar().hide();
         }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode== KeyEvent.KEYCODE_BACK) {
+            super.onKeyDown(keyCode, event);
+            return true;
+        }
+        return false;
     }
     void initializeID(){
         bottomNavigationView = this.findViewById(R.id.id_navigation_view);

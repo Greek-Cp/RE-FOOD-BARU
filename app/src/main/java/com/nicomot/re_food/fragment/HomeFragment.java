@@ -79,7 +79,9 @@ public class HomeFragment extends Fragment {
         Gson gson = new Gson();
         Type typeCustomer = new TypeToken<List<Customer>>(){}.getType();
         List<Customer> listCust = gson.fromJson(sharedPreferences.getString("KEY_ORDER",""),typeCustomer);
+        System.out.println(new Gson().toJson(listCust) + " ISI JSON GLIM");
         return listCust;
+
     }
     String getLogModelCustomer(String calledFrom){
         SharedPreferences sharedPreferences;
@@ -108,14 +110,13 @@ public class HomeFragment extends Fragment {
         for(int i = 0; i < listMakanan.size(); i++){
             names[i] = listMakanan.get(i);
         }
-
         HashMap<String, Integer> repeatNames = new HashMap<String, Integer>();
         List<Pesanan> pesananNew = new ArrayList<>();
         int repeatCount = 0;
         for (int i = 0; i < names.length; i++) {
             int count = 0;
             for (int k = 0; k < names.length; k++) {
-                if (names[i].getNamaPesanan().equals( names[k].getNamaPesanan())) {
+                if (    names[i].getNamaPesanan().equals( names[k].getNamaPesanan())) {
                     count++;
                 }
             }
@@ -137,16 +138,20 @@ public class HomeFragment extends Fragment {
         if(listCustomerValid != null){
             List<Customer> validCustomer = new ArrayList<>();
             for(Customer customerValid : listCustomerValid){
-                List<Pesanan> listPesanan = customerValid.getSemuaPesanan();
-                List<Pesanan> filterBaru  = removeDuplicatePesanan(listPesanan);
-                customerValid.setSemuaPesanan(filterBaru);
-                validCustomer.add(customerValid);
+                System.out.println("no cust = " + customerValid.getNoCustomer());
+                if(customerValid.isStatusSudahDiSiapkan() == false){
+                    List<Pesanan> listPesanan = customerValid.getSemuaPesanan();
+                    List<Pesanan> filterBaru  = removeDuplicatePesanan(listPesanan);
+                    customerValid.setSemuaPesanan(filterBaru);
+                    validCustomer.add(customerValid);
+
+                }
             }
             listenerClickPesanan = new AdapterPesanan.clickPesanan() {
                 @Override
                 public void clickPesanan(int pesanan) {
                     Toast.makeText(getActivity().getApplicationContext(), "Pesanan ke - " + pesanan + " dipilih", Toast.LENGTH_SHORT).show();
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.id_base_frame,new SiapkanPesanan(listCustomerValid.get(pesanan))).commit();
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.id_base_frame,new SiapkanPesanan(validCustomer.get(pesanan),pesanan)).commit();
                 }
             };
 

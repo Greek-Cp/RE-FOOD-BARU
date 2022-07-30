@@ -188,7 +188,7 @@ public class OrderListFragment extends Fragment {
                     @Override
                     public void clickPesanan(int pesanan) {
                         insertLogDataValidPesananKeDatabase(listCustomerValid.get(pesanan));
-                        DatabaseReference dbR = database.getReference().child("CustomerValid").child(listCustomerValid.get(pesanan).getName());
+                        DatabaseReference dbR = database.getReference().child("CustomerValid").child(String.valueOf(listCustomerValid.get(pesanan).getNoCustomer()));
                         dbR.removeValue();
                         listCustomerValid.remove(pesanan);
                         Toast.makeText(getActivity().getApplicationContext(),"Pesanan Siap Diantarkan",Toast.LENGTH_SHORT).show();

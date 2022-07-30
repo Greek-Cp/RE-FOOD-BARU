@@ -18,4 +18,7 @@
     <color name="card_tosca">#06FFA8</color>
     <color name="card_white">#FFFFFF</color>
     <color name="card_darkmode">#424242</color>
+    <!-- Fully transparent, equivalent to 0x00000000 -->
+    <color name="transparents">#00000000</color>
+
 </resources>

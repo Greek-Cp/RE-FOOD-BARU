@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -56,6 +57,19 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         btnRegister.setOnClickListener(this);
     }
 
+    @Override
+    public void onBackPressed() {
+
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode== KeyEvent.KEYCODE_BACK) {
+            super.onKeyDown(keyCode, event);
+            return true;
+        }
+        return false;
+    }
 
     void hiddenActionBar(){
         if(getSupportActionBar() != null){
@@ -65,8 +79,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
     void registerToDatabase(){
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://re-food-7fc1b-default-rtdb.asia-southeast1.firebasedatabase.app/");
-        DatabaseReference myRef = database.getReference("Akun").child(editTextUsername.getText().toString());
-        Account account = new Account(editTextUsername.getText().toString(),editTextPassword.getText().toString(),spinnerKerjaan.getSelectedItem().toString());
+            DatabaseReference myRef = database.getReference("Akun").child(editTextUsername.getText().toString());
+            Account account = new Account(editTextUsername.getText().toString(),editTextPassword.getText().toString(),spinnerKerjaan.getSelectedItem().toString());
         myRef.setValue(account);
         Toast.makeText(getApplicationContext(),"Register Berhasil ",Toast.LENGTH_SHORT).show();
     }
@@ -79,11 +93,15 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.id_btn_register_account:
-                if(!editTextUsername.getText().toString().isEmpty() && !editTextPassword.getText().toString().isEmpty()){
+                if(!editTextUsername.getText().toString().isEmpty() && !editTextPassword.getText().toString().isEmpty() &&
+                editTextUsername.getText().toString().length() >= 4 && editTextPassword.getText().toString().length() >= 4
+              &&   editTextUsername.getText().toString().length() <= 8 && editTextPassword.getText().toString().length() <= 8
+                ){
                     registerToDatabase();
-                } else{
-                    editTextUsername.setError("Username Tidak Boleh Kosong");
-                    editTextPassword.setError("Password Tidak Boleh Kosong");
+                } else if(editTextUsername.getText().toString().length() <= 4
+                        && editTextPassword.getText().toString().length() <= 4){
+                    editTextUsername.setError("Username Minimal 4 Karakter Dan Maximal 8 Karakter");
+                    editTextPassword.setError("Password Minimal 4 Karakter Dan Maximal 8 Karakter");
                 }
                 break;
             case R.id.id_btn_login_activity:
