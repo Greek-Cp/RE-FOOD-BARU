@@ -140,7 +140,7 @@ public class OrderListFragment extends Fragment {
     DatabaseReference myRef;
     ImageView btnRefresh;
     void insertLogDataValidPesananKeDatabase(Customer customer){
-        FirebaseDatabase database = FirebaseDatabase.getInstance("https://re-food-7fc1b-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://re-food-b2037-default-rtdb.firebaseio.com/");
         DatabaseReference myRef = database.getReference("LogPesanan").child(String.valueOf(customer.getNoCustomer()));
         myRef.setValue(customer);
     }
@@ -148,7 +148,7 @@ public class OrderListFragment extends Fragment {
     void setAdapterListPesanan() {
         listCustomerValid = new ArrayList<>();
         //        setAdapterListPesanan();
-        database = FirebaseDatabase.getInstance("https://re-food-7fc1b-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        database = FirebaseDatabase.getInstance("https://re-food-b2037-default-rtdb.firebaseio.com/");
         myRef = database.getReference().child("CustomerValid");
         System.out.println(myRef.getKey() + " KEEEY ");
         List<Menu> menuMakanan = getMenuMakanan();

@@ -78,7 +78,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
     }
     void registerToDatabase(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance("https://re-food-7fc1b-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://re-food-b2037-default-rtdb.firebaseio.com/");
             DatabaseReference myRef = database.getReference("Akun").child(editTextUsername.getText().toString());
             Account account = new Account(editTextUsername.getText().toString(),editTextPassword.getText().toString(),spinnerKerjaan.getSelectedItem().toString());
         myRef.setValue(account);

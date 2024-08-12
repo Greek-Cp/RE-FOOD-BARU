@@ -78,7 +78,7 @@ public class DapurActivity extends AppCompatActivity {
     List<Customer> getDataCustomerFromDatabase(){
         listCustomerFromDatabase = new ArrayList<>();
         //        setAdapterListPesanan();
-        database = FirebaseDatabase.getInstance("https://re-food-7fc1b-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        database = FirebaseDatabase.getInstance("https://re-food-b2037-default-rtdb.firebaseio.com/");
         myRef = database.getReference().child("Customer");
         if(listCustomerValid == null){
             listCustomerValid = new ArrayList<>();
@@ -227,7 +227,7 @@ public class DapurActivity extends AppCompatActivity {
     }
 
     void insertDataValidPesananKeDatabase(Customer customer){
-        FirebaseDatabase database = FirebaseDatabase.getInstance("https://re-food-7fc1b-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://re-food-b2037-default-rtdb.firebaseio.com/");
         DatabaseReference myRef = database.getReference("CustomerValid").child(String.valueOf(customer.getNoCustomer()));
         myRef.setValue(customer);
     }

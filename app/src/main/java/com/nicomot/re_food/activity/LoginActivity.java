@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
     void checkLogin(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance("https://re-food-7fc1b-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://re-food-b2037-default-rtdb.firebaseio.com/");
         DatabaseReference myRef = database.getReference().child("Akun");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override

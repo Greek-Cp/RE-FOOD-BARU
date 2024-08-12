@@ -1,33 +1,71 @@
 {
   "project_info": {
-    "project_number": "472991476679",
-    "project_id": "re-food-7fc1b",
-    "storage_bucket": "re-food-7fc1b.appspot.com"
+    "project_number": "532247447823",
+    "firebase_url": "https://re-food-b2037-default-rtdb.firebaseio.com",
+    "project_id": "re-food-b2037",
+    "storage_bucket": "re-food-b2037.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:472991476679:android:b363a967452437b4e9c7e2",
+        "mobilesdk_app_id": "1:532247447823:android:b9c05823c8561e57c7967a",
         "android_client_info": {
-          "package_name": "com.nicomot.re_food"
+          "package_name": "com.ceritakita.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "472991476679-toc5184edjn0qk4u005tt7qnug4jr3i0.apps.googleusercontent.com",
+          "client_id": "532247447823-poql730h3jsnichji495mkheiebt23vm.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC6Wsx5WuqYXWWKiA2DjszPY7AUjMkldsk"
+          "current_key": "AIzaSyB-MzZmofMi1pSABiSzVAoujkkjSOpPLQY"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "472991476679-toc5184edjn0qk4u005tt7qnug4jr3i0.apps.googleusercontent.com",
+              "client_id": "532247447823-poql730h3jsnichji495mkheiebt23vm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:532247447823:android:5105bdfc113456f8c7967a",
+        "android_client_info": {
+          "package_name": "com.nicomot.re_food"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "532247447823-0gck9er16ejt4n4vh59p26jtl4jqf3l0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nicomot.re_food",
+            "certificate_hash": "38c536a68387d762fd10196dc213b03b98df5999"
+          }
+        },
+        {
+          "client_id": "532247447823-poql730h3jsnichji495mkheiebt23vm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-MzZmofMi1pSABiSzVAoujkkjSOpPLQY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "532247447823-poql730h3jsnichji495mkheiebt23vm.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
